@@ -26,7 +26,7 @@
 	{/if}
 {/foreach}
 </p>
-<table cellspacing="0">
+<table>
 {section name=users loop=$fusers}
 	<tr class="{cycle values="first, second"}"><td>{$fusers[users].username}</td><td class="action"><a href="kchange_pass.php?uname={$fusers[users].username}&index={$fusers[users].index}">Change Passwd</a></td><td class="action"><a href="kuser_groups.php?uname={$fusers[users].username}&index={$fusers[users].index}">Groups</a></td><td class="action"><a href="kdel_user.php?uname={$fusers[users].username}&index={$fusers[users].index}">Delete</a></td>
 {if $fusers[users].failed >= $failed_limit}
