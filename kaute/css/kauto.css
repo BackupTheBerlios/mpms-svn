@@ -1,0 +1,41 @@
+body{
+	font-family: Helvetca, sans;
+}
+
+h1{
+	color: blue;
+}
+
+input.ksubmit{
+	border:1px solid black;
+	font-weight: bold;
+}
+
+input{
+	border:1px solid black;
+}
+
+div.error{
+	color: red;
+}
+div.ok{
+	color: green;
+}
+
+fieldset{
+	background-color: #E0E0E0;
+}
+tr.first{
+	background-color: #E0E0E0;
+}
+tr.second{
+	background-color: #CCCCFF;
+}
+td.action{
+	padding-left: 5px;
+}
+legend{
+	color: #828282;
+	letter-spacing: 7px;
+	font-weight: bold;
+}
