@@ -250,9 +250,9 @@ class kcheckbox{
 	*@param string $name name of kcheckbox*/
 	function __construct($name, &$smarty, $checked = false){
 		$this->name=$name;
-		$smarty->assign_by_ref($this->name, $this);
-		$this->process();
+		$smarty->assign_by_ref($this->name, $this);	
 		$this->checked = $checked;
+		$this->process();
 	}
 	
 	/**Internal method which process POST variable to set this iobject value*/
