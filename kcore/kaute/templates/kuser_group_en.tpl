@@ -1,11 +1,12 @@
+{*last xhtml check on:24.04.2005.*}
 {capture name="css"}
 <link rel="stylesheet" type="text/css" href="css/kauto.css" />{/capture}
 {include file="kheader_en.tpl" kptitle="User Groups" kpcss=$smarty.capture.css}
 {include file="knavig_en.tpl"}
 <h1>User Groups</h1>
 <p>User: {$kuname->get_value()}</p>
+<form id="{$klist_group->name}" method="post" action="kuser_groups.php">
 <fieldset><legend>Display Options</legend>
-<form name="{$klist_group->name}" method="post" action="kuser_groups.php">
 {kinput name=$kuname type="hidden"}
 {kinput name=$uindex type="hidden"}
 {kinput name=$knamep label="Group name" type="text"}
@@ -16,8 +17,8 @@
 {koption name=$kgroup_ppage label="50" value="50" context="50"}
 </select>
 {kinput name=$list_group type="submit" label="Search" class="ksubmit"}
-</form>
 </fieldset>
+</form>
 {if $no_of_groups > 0}
 <p>There are {$no_of_groups} groups found in the system.</p>
 <p>Pages:
@@ -25,13 +26,14 @@
 	{if $groupp == $page}
 	<span>{$page}</span>
 	{else}
-	<a href="kuser_groups.php?kgpp={$groupspp}&ksearch={$gsearch}&p={$page}&uname={$kuname->get_value()}&index={$uindex->get_value()}">{$page}</a>
+	<a href="kuser_groups.php?kgpp={$groupspp}&ksearch={$gsearch}&amp;p={$page}&amp;uname={$kuname->get_value()}&amp;index={$uindex->get_value()}">{$page}</a>
 	{/if}
 {/foreach}
 </p>
-<form name="{$kuser_group->name}" action="kuser_groups.php?kgpp={$groupspp}&ksearch={$gsearch}&p={$groupp}&uname={$kuname->get_value()}&index={$uindex->get_value()}" method="post">
-{kinput name=$kuname type="hidden"}
-{kinput name=$uindex type="hidden"}
+<form id="{$kuser_group->name}" action="kuser_groups.php?kgpp={$groupspp}&amp;ksearch={$gsearch}&amp;p={$groupp}&amp;uname={$kuname->get_value()}&amp;index={$uindex->get_value()}" method="post">
+<fieldset class="list">
+{*kinput name=$kuname type="hidden"*}
+{kinput name=$ug_uindex type="hidden"}
 <table>
 <tr><th>Name</th><th>Description</th></tr>
 {section name=groups loop=$fgroups}
@@ -41,6 +43,7 @@
 {/section}
 </table>
 {kinput name=$user_group type="submit" label="Change" class="ksubmit"}
+</fieldset>
 </form>
 {else}
 <p>Your query did not return any group.</p>

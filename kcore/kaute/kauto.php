@@ -183,14 +183,17 @@ class kauth{
 			$this->query = &get_kdb_connection(); 
 		else
 			$this->query =& $query;
-		/*$this->set_session();
+		//to check xhtml coment out bleove code
+		//this will disable authentification
+		$this->set_session();
 		if(!$this->check())
 			$this->login();
 		$this->save_session();
 		if(!$this->check_group($group)){
 			$this->no_premission();
 			exit(0);
-		}*/
+		}
+		//end of comment out for xhtml check
 
 	}
 	/** save session information

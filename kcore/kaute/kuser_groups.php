@@ -69,7 +69,7 @@ class uuser_group_submit extends ksubmit{
 		//set new user groups (and delete unwanted)
 		$rez = null;
 		try{
-			$rez =&$this->admin->query->execute("SELECT kaute.set_user_groups('".$inputs['uindex']->get_value()."',".$user_groups.")");
+			$rez =&$this->admin->query->execute("SELECT kaute.set_user_groups('".$inputs['ug_uindex']->get_value()."',".$user_groups.")");
 		}
 		catch(Exception $e){
 			$this->admin->log->emerg($e->getMessage());
@@ -147,8 +147,12 @@ class kuser_groups{
 			$this->smarty->assign_by_ref("fgroups", &$finded_groups);
 			//form for seting user groups
 			$ug_form =& new kform("kuser_group", &$this->smarty);
-			$ug_form->add_input(&$kuindex);
-			$ug_form->add_input(&$kuname);
+			$ug_kuindex =& new kinput("ug_uindex", &$this->smarty);
+			$ug_kuindex->set_value($kuindex->get_value());
+			$ug_form->add_input(&$ug_kuindex);
+			//$ug_uname = $kuname;
+			//$ug_uname->name="ug_kuname";
+			//$ug_form->add_input(&$ug_kuname);
 			$ug_form->add_submit(new uuser_group_submit(&$this->smarty, &$this));
 			//create checkboxes
 			foreach($finded_groups as &$value){

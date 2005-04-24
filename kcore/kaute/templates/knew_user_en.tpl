@@ -1,3 +1,4 @@
+{*last xhtml check on:24.04.2005.*}
 {capture name="css"}
 <link rel="stylesheet" type="text/css" href="css/kauto.css" />{/capture}
 {include file="kheader_en.tpl" kptitle="New User" kpcss=$smarty.capture.css}

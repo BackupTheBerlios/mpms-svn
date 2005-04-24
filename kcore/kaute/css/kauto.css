@@ -25,6 +25,9 @@ div.ok{
 fieldset{
 	background-color: #E0E0E0;
 }
+fieldset.list{
+	background-color: white;	
+}
 tr.first{
 	background-color: #E0E0E0;
 }
