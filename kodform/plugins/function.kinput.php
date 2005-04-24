@@ -63,7 +63,7 @@ function smarty_function_kinput($param, &$smarty){
 		$string.="<input type=\"".$param['type']."\" id=\"".$field->name."\" name=\"".$field->name."\" value=\"".$field->get_value()."\"";
 		if($field->checked)
 			$string.=" checked=\"checked\"";
-		$string.="\" />";
+		$string.=" />";
 	}
 	return $string;
 }
