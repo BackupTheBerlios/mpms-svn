@@ -1,6 +1,6 @@
 <?php
 /*
-    kaute - authentification and access library
+    kconf - authentification and access library
     Copyright (C) 2005  Boris Tomić
 
     This program is free software; you can redistribute it and/or modify
@@ -19,17 +19,9 @@
 
 */
 
-class kaute_conf{
-	//kodform configuration
-	const kodform_dir="/home/http/kodform";
-	const kodform_plugin_dir="/home/http/kodform/plugins";
-	//kdb configuration
-	const kdb_dir="/home/http/kdb";
-	const logger="/usr/local/lib/php/Log.php";
-	const admin_group="admin";
-}
+require_once '../kconf/kconf.php';
 
-require_once kaute_conf::kdb_dir."/kdb.php";
+require_once kconf::kdb_dir."/kdb.php";
 
 //set bd konection parameters
 $kdb_conn = null;
@@ -37,7 +29,7 @@ $kdb_conn = null;
 function & get_kdb_connection(){
 	global $kdb_conn;
 	if($kdb_conn == null)
-		$kdb_conn =&new kdb_query(new kdb_connect("host=localhost dbname=kodmasin user=kodmasin password=maskod"));
+		$kdb_conn =&new kdb_query(new kdb_connect(kconf::db_connect));
 	return $kdb_conn;
 }
 

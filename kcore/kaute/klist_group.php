@@ -22,10 +22,10 @@
 
 require_once 'kauto.php';
 require_once 'kauto_conf.php';
-require_once kaute_conf::kodform_dir.'/kodform.php';
-require_once kaute_conf::logger;
+require_once kconf::kodform_dir.'/kodform.php';
+require_once kconf::logger;
 
-$auth = new kauth(kaute_conf::admin_group,"kuadmin.php");
+$auth = new kauth(kconf::admin_group,"kuadmin.php");
 
 class list_group_submit extends ksubmit{
 	private $admin;
@@ -54,7 +54,7 @@ class klist_group{
 	}
 	
 	function group_list_UI(){
-		array_push($this->smarty->plugins_dir, kaute_conf::kodform_plugin_dir);
+		array_push($this->smarty->plugins_dir, kconf::kodform_plugin_dir);
 		
 		$form =& new kform("klist_group", &$this->smarty);
 		$search =&new kinput("knamep",&$this->smarty);

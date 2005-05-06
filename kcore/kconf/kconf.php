@@ -1,7 +1,6 @@
 <?php
-
 /*
-    kaute - authentification and access library
+    kconf - MPMS configuration
     Copyright (C) 2005  Boris Tomić
 
     This program is free software; you can redistribute it and/or modify
@@ -20,29 +19,17 @@
 
 */
 
-require_once 'kauto.php';
-require_once 'kauto_conf.php';
-require_once kconf::kodform_dir.'/kodform.php';
-require_once kconf::logger;
-
-$auth = new kauth(kconf::admin_group,"kuadmin.php");
-
-if(isset($_GET['logout'])){
-	$auth->logout("kuadmin.php");
-	exit(0);
+class kconf{
+	//kodform configuration
+	const kodform_dir="/home/http/kodform";
+	const kodform_plugin_dir="/home/http/kodform/plugins";
+	//kdb configuration
+	const kdb_dir="/home/http/kdb";
+	const db_connect="host=localhost dbname=kodmasin user=kodmasin password=maskod";
+	//logger librari path
+	const logger="/usr/local/lib/php/Log.php";
+	//which is superuser group
+	const admin_group="admin";
 }
-
-class admin{
-	private $smarty;
-	function __construct(){
-		$this->smarty=&new Smarty();
-	}
-	function main(){
-		klang::display(&$this->smarty,"kuadmin");
-	}
-}
-
-$padmin = new admin;
-$padmin->main();
 
 ?>

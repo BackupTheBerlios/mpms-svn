@@ -22,10 +22,10 @@
 
 require_once 'kauto.php';
 require_once 'kauto_conf.php';
-require_once kaute_conf::kodform_dir.'/kodform.php';
-require_once kaute_conf::logger;
+require_once kconf::kodform_dir.'/kodform.php';
+require_once kconf::logger;
 
-$auth = new kauth(kaute_conf::admin_group,"kuadmin.php");
+$auth = new kauth(kconf::admin_group,"kuadmin.php");
 
 class new_user_submit extends ksubmit{
 	private $admin;
@@ -81,7 +81,7 @@ class knew_user{
 	}
 	
 	function new_user_UI(){
-		array_push($this->smarty->plugins_dir, kaute_conf::kodform_plugin_dir);
+		array_push($this->smarty->plugins_dir, kconf::kodform_plugin_dir);
 		
 		$form =& new kform("knew_user", &$this->smarty);
 		$form->add_input(new kinput("kname",&$this->smarty, new kv_min_max(kauth::min_name, kauth::max_name)));

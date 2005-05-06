@@ -30,8 +30,8 @@
 
 require_once 'Smarty.class.php';
 require_once 'kauto_conf.php';
-require_once kaute_conf::kodform_dir."/kodform.php";
-require_once kaute_conf::kdb_dir."/kdb.php";
+require_once kconf::kodform_dir."/kodform.php";
+require_once kconf::kdb_dir."/kdb.php";
 require_once '../klang/klang.php';
 require_once '/usr/local/lib/php/Log.php';
 
@@ -248,7 +248,7 @@ class kauth{
 	/**displays and process login form*/
 	function login(){
 		$smarty =& new Smarty();
-		array_push($smarty->plugins_dir, kaute_conf::kodform_plugin_dir);
+		array_push($smarty->plugins_dir, kconf::kodform_plugin_dir);
 		if($this->idle_too_long)
 			$smarty->assign("idle", true);
 		$form =& new kform("klogin", &$smarty, $this->form_action);

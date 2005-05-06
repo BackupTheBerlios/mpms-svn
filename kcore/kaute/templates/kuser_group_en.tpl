@@ -30,6 +30,9 @@
 	{/if}
 {/foreach}
 </p>
+{if $groups_changed == true}
+<div class="ok">User groups changed.</div>
+{/if}
 <form id="{$kuser_group->name}" action="kuser_groups.php?kgpp={$groupspp}&amp;ksearch={$gsearch}&amp;p={$groupp}&amp;uname={$kuname->get_value()}&amp;index={$uindex->get_value()}" method="post">
 <fieldset class="list">
 {*kinput name=$kuname type="hidden"*}

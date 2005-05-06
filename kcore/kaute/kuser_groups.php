@@ -22,10 +22,10 @@
 
 require_once 'kauto.php';
 require_once 'kauto_conf.php';
-require_once kaute_conf::kodform_dir.'/kodform.php';
-require_once kaute_conf::logger;
+require_once kconf::kodform_dir.'/kodform.php';
+require_once kconf::logger;
 
-$auth = new kauth(kaute_conf::admin_group,"kuadmin.php");
+$auth = new kauth(kconf::admin_group,"kuadmin.php");
 
 //handles group list display option form
 class ulist_group_submit extends ksubmit{
@@ -93,7 +93,7 @@ class kuser_groups{
 	}
 
 	function main(){
-		array_push($this->smarty->plugins_dir, kaute_conf::kodform_plugin_dir);
+		array_push($this->smarty->plugins_dir, kconf::kodform_plugin_dir);
 		//form for displasy options	
 		$form =& new kform("klist_group", &$this->smarty);
 		$search =&new kinput("knamep",&$this->smarty);
@@ -162,7 +162,8 @@ class kuser_groups{
 				$value['cb']=&$cb;
 			}
 			//check if form is submited
-			$ug_form->submited();
+			if($ug_form->submited())
+				$this->smarty->assign("groups_changed", true);
 			//find user groups
 			$user_groups =& $this->get_user_groups($kuindex->get_value(), $this->gsearch, $this->gpage*$this->groupspp, $this->groupspp);
 			foreach($finded_groups as &$value){
@@ -174,7 +175,7 @@ class kuser_groups{
 	}
 
 		/*$smarty=&new Smarty();
-		array_push($smarty->plugins_dir, kaute_conf::kodform_plugin_dir);
+		array_push($smarty->plugins_dir, kconf::kodform_plugin_dir);
 		$form =& new kform("kuser_group", &$smarty);
 		$kname =& new kinput("kname", &$smarty);
 		if(isset($_GET['uname']))
