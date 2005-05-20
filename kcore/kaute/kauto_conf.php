@@ -21,21 +21,11 @@
 
 require_once '../kconf/kconf.php';
 
-require_once kconf::kdb_dir."/kdb.php";
-
-//set bd konection parameters
-$kdb_conn = null;
-
-function & get_kdb_connection(){
-	global $kdb_conn;
-	if($kdb_conn == null)
-		$kdb_conn =&new kdb_query(new kdb_connect(kconf::db_connect));
-	return $kdb_conn;
-}
-
 //set log parameters
 $klogger = null;
 
+//this name should be changes to more specific name for kauth logger
+//singelton method is doing this thing so it sould be changed completely
 function & get_logger(){
 	global $klogger;
 	if($klogger == null)

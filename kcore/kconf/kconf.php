@@ -20,6 +20,8 @@
 */
 
 class kconf{
+	//home dir for kodmasin
+	const install_root_dir = "/home";
 	//kodform configuration
 	const kodform_dir="/home/http/kodform";
 	const kodform_plugin_dir="/home/http/kodform/plugins";
@@ -30,6 +32,24 @@ class kconf{
 	const logger="/usr/local/lib/php/Log.php";
 	//which is superuser group
 	const admin_group="admin";
+	//directory separator
+	const dir_sep = "/";
+	//apache user
+	const apache_user="nobody";
+	const apache_group="nogroup";
 }
+
+
+//set bd konection parameters
+require_once kconf::kdb_dir."/kdb.php";
+$kdb_conn = null;
+
+function & get_kdb_connection(){
+	global $kdb_conn;
+	if($kdb_conn == null)
+		$kdb_conn =&new kdb_query(new kdb_connect(kconf::db_connect));
+	return $kdb_conn;
+}
+
 
 ?>
