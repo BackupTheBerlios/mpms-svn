@@ -105,7 +105,7 @@ class kchange_group{
 			$this->smarty->assign("mess", 2);
 		}
 		//klang::display(&$this->smarty,'kchange_group');
-		$this->smarty->display("kchange_group.tpl");
+		$this->smarty->display("kchange_group_en.tpl");
 	}
 }
 $chpage =&new kchange_group;
