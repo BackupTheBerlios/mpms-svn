@@ -1,0 +1,3 @@
+<?xml version="1.0"?>
+<!DOCTYPE iloc SYSTEM "http://norimob/iloc/xml/iloc.dtd">
+<iloc version="0.1"><langs><lang name="en"/><lang name="hr"/></langs><constants><constant name="page_title"><default>Test klangSmarty</default><translation lang="en">Test klangSmarty Engleski</translation><translation lang="hr">Test langSmarty Hrvatski</translation></constant><constant name="change_lang"><default>Change Language to</default><translation lang="en">Cahnge Language</translation><translation lang="hr">Promjeni jezik</translation></constant></constants></iloc>
