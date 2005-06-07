@@ -62,6 +62,7 @@ class kchange_group{
 	function __construct(){
 		$this->smarty=&new Smarty();
 		array_push($this->smarty->plugins_dir, kconf::kodform_plugin_dir);
+		array_push($this->smarty->plugins_dir, kconf::klang_plugin_dir);
 		$this->query= &get_kdb_connection();
 		$this->log =& get_logger();
 	}
@@ -103,7 +104,8 @@ class kchange_group{
 		else if($kname->get_value()==null){
 			$this->smarty->assign("mess", 2);
 		}
-		klang::display(&$this->smarty,'kchange_group');	
+		//klang::display(&$this->smarty,'kchange_group');
+		$this->smarty->display("kchange_group.tpl");
 	}
 }
 $chpage =&new kchange_group;

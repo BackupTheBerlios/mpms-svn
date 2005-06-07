@@ -24,7 +24,7 @@
 
 
 /**file name generator
-* this function generate file random unique (there is big posibilite that file will be
+* this function generate random unique (there is big posibilite that file will be
 unique because there is usage of timestamp) file name.
 * @param int $deep deepth of random lowercase letters*/
 function kfname_gen($deep){
@@ -33,5 +33,24 @@ function kfname_gen($deep){
 		$name.=chr(rand(97,122));
 	$name.=sha1($name.time());
 	return $name;
+}
+
+/**directory tree generator
+* Generates directory tree from small caps english letters.
+* @param int $deepth how deep tree will be
+* @param string $path path where tree will be created*/
+function dir_gen($deepth, $path){
+	if($deepth>0){
+		for($i=97;$i<123;$i++){
+			$npath = $path."/".chr($i);
+			print "Creating dir: ".$npath."... ";
+			if(mkdir($npath))
+				print "done";
+			else
+				print "fail";
+			print "\n";
+			dir_gen($deepth-1,$npath);
+		}
+	}
 }
 ?>

@@ -21,7 +21,7 @@
 
 class kconf{
 	//home dir for kodmasin
-	const install_root_dir = "/home";
+	const install_root_dir = "/home/http";
 	//kodform configuration
 	const kodform_dir="/home/http/kodform";
 	const kodform_plugin_dir="/home/http/kodform/plugins";
@@ -37,6 +37,10 @@ class kconf{
 	//apache user
 	const apache_user="nobody";
 	const apache_group="nogroup";
+	//klang plugin dir
+	const klang_plugin_dir = "/home/http/kcore/klang/plugins";
+	//klang dir
+	const klang_dir = "/home/http/kcore/klang";
 }
 
 

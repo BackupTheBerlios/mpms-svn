@@ -21,6 +21,11 @@
 
 require_once '../kconf/kconf.php';
 
+class kauto_conf{
+	/**where are */
+	const trans_dir="ilang";
+}
+
 //set log parameters
 $klogger = null;
 
