@@ -23,24 +23,23 @@
 * @author Boris Tomic
 */
 require_once 'ksmess_conf.php';
+require_once 'kfunctions/kfileio_func.php';
 
 /**attachement abstract input handler*/
 abstract class ks_handler{
 	/**abstrac metod which reads data from source.
 	When there is no more data it returns false*/
-	abstract public function read_next(){
-		return false;
-	}
+	abstract public function read_next();
 }
 
 /**memory handler
 * the simplest handler. It is not good for large memoris torage because it reads whole data at once*/
 class ksh_memory extends ks_handler{
-	protected var $data;
-	protected var $end;
+	protected $data;
+	protected $end;
 	/**creates memory input handler
 	* @param string $data memory data*/
-	public function __construct(&$data){
+	public function __construct($data){
 		$this->data=&$data;
 		$this->end=false;
 	}
@@ -63,22 +62,22 @@ class ksmessage{
 	*
 	* Sender must be valid system user
 	* @var integer*/
-	protected $from;
+	public $from;
 	/**holds receiver id
 	* Receiver must be valid system user
 	* @var integer*/
-	protected $to;
+	public $to;
 	/** subject of message
 	* @var string*/
-	protected $subject;
+	public $subject;
 	/** type of system message
 	* Known system messages are defined in (to do)
 	* @var int
 	**/
-	protected $type;
+	public $type;
 	/** body of message
 	* @var string*/
-	protected $body="";
+	public $body="";
 	/**log object*/
 	protected $log;
 	/**creates message object
@@ -86,9 +85,9 @@ class ksmessage{
 	* @param mixed $to this can be user id or array of user ids to which message will be sent
 	* @param string $subject subject of message
 	* @param string $body contex of message - message body*/
-	function __construct($from, &$to, $type, $subject="no subject", $body=""){
+	function __construct($from, $to, $type, $subject="no subject", $body=""){
 		$this->from = $from;
-		$this->to =& $to;
+		$this->to = $to;
 		$this->type = $type;
 		$this->subject = $subject;
 		$this->body = $body;
@@ -106,7 +105,7 @@ class ksmessage_in extends ksmessage{
 	* @param string $name name of attachments
 	* @param ks_handler $data_handler from where data will be readed
 	* @param string type mime type of attachment*/
-	function add_attachemnt( $name, $type,ks_handler &$data_handler){
+	function add_attachment( $name, $type,ks_handler &$data_handler){
 		$this->attachments[]=array("name" => $name, "handler" => $data_handler, "type" => $type);
 	}
 }
@@ -114,12 +113,12 @@ class ksmessage_in extends ksmessage{
 /**class for reading attachment data*/
 class ksattach_pointer{
 	/**pointer to be used for reading attachment data. it is read only file pointer*/
-	public var $fp;
+	public $fp;
 	/**just opens file pointer for rading
 	* You can use any php file reading function on this pointer
 	* @param string $path path to file which will be opened for reading*/
 	function __construct($path){
-		$this->fp = fopen($path,"r");
+		$this->fp =& fopen($path,"r");
 		if($this->fp===false)
 			get_ksmess_logger()->error("Error occured opening ".$path." file.");
 	}
@@ -127,10 +126,11 @@ class ksattach_pointer{
 	function close(){
 		fclose($this->fp);
 	}
-	/**on terminating object just close pointer if not already closed*/	
-	function __destruct(){
+	/**on terminating object just close pointer if not already closed*/
+	//it seems that this is killing fp before - could be bug
+	/*function __destruct(){
 		$this->close();
-	}
+	}*/
 }
 /**class for messages which will be received*/
 class ksmessage_out extends ksmessage{
@@ -139,30 +139,33 @@ class ksmessage_out extends ksmessage{
 	* <code> array("name" => $some_name, "path" => $some_path, "type" => some_type); </code>*/
 	private $attachments=array();
 	/**creates out message from database based on message id*/
-	function __consturct($mess_id){
+	function __construct($mess_id){
 		$rez = null;
 		$rez1 = null;
 		$mess = null;
 		try{
 			$db_conn=& get_kdb_connection();
-			$rez = $db_conn->execute("SELECT * FROM ksmess.receive('".$mess_id."'");
-			$rez1= $db_conn->execute("SELECT * FROM ksmess.get_attachs(".$mess_id."'");
+			$rez = $db_conn->execute("SELECT * FROM ksmess.receive('".$mess_id."')");
+			$rez1= $db_conn->execute("SELECT * FROM ksmess.get_attachs('".$mess_id."')");
 		}
 		catch(Exception $e){
-			get_ksmess_logger()->error($e->getMessage());
+			get_ksmess_logger()->err($e->getMessage());
 			exit(1);
 		}
 		if($row = $rez->next()){
 			//store message data
-			$this->type=$row['type'];
+			/*$this->type=$row['type'];
 			$this->subject=$row['subject'];
 			$this->body=$row['body'];
 			$this->to=$row['mto'];
-			$this->from=$row['mfrom'];
+			$this->from=$row['mfrom'];*/
+			parent::__construct($row["mfrom"], $row["mto"], $row["type"], $row["subject"], $row["body"]);
 			//get me attachments info
 			while($row1 = $rez1->next())
 				$this->attachments[]=array($row1['name'], $row1['path'], $row['type']);
 		}
+		else
+			get_ksmess_logger()->err("Someting is wrong with getting attachment.");
 	}
 	/**counts number of attachements
 	* @reutrn int number of attachments*/
@@ -174,7 +177,12 @@ class ksmessage_out extends ksmessage{
 	* @return array*/
 	function & get_attachment($no){
 		if($no >=0 && $no < count($this->attachments)){
-			return array("name"=>$this->attachmentsi[$no][0], "fp"=>new ksattach_pointer($this->attachments[$no][1], "type"=> $this->attachments[$no][2]);
+			$ret_array=array();
+			$ret_array["name"]=$this->attachments[$no][0];
+			$ret_array["fp"]=& new ksattach_pointer($this->attachments[$no][1]);
+			$ret_array["type"]=$this->attachments[$no][2];
+			return $ret_array;
+			//return array("name"=>$this->attachments[$no][0], "fp"=> & new ksattach_pointer($this->attachments[$no][1]), "type"=> $this->attachments[$no][2]);
 		}
 		return array();
 	}
@@ -192,13 +200,17 @@ class ksmess_engine{
 	}
 	/**insert attachments
 	* @param array $attachment array which holds atachment data*/
-	protected send_attachments(&$mess_id){
+	protected function send_attachments(&$mess_id, $attachments){
 		$error=false;
-		foreach($this->attachments as $attachment){
+		foreach($attachments as $attachment){
 			//save attachment to file sistem
-			$att_path = ksmess_conf::attachements_home.kfname_gen(ksmess_conf::att_dir_tree_deep);
+			$filename = kfname_gen(ksmess_conf::att_dir_tree_deep);
+			$att_path = ksmess_conf::attachements_home."/";
+			for($i=0;$i<ksmess_conf::att_dir_tree_deep;$i++)
+				$att_path.=$filename[$i]."/";
+			$att_path.=$filename;
 			$att_handler = $attachment['handler'];
-			$fp = fopen($att_name, "w");
+			$fp = fopen($att_path, "w");
 			if($fp != false){
 				while(($data = $att_handler->read_next()))
 					fwrite($fp, $data);
@@ -207,13 +219,13 @@ class ksmess_engine{
 				try{
 					$rez = $this->db_conn->execute("SELECT * FROM ksmess.put_attach('".$mess_id."','".$attachment['name']."','".$attachment['type']."', '".$att_path."')");
 				}
-				catch(Exception e){
-					$this->log->error(e->getMessage());
+				catch(Exception $e){
+					$this->log->err($e->getMessage());
 					$error=true;
 				}
 			}
 			else{
-				$this->log->error("Could not save attachment because could not open valid file pointer.");
+				$this->log->err("Could not save attachment because could not open valid file pointer.");
 				$error=true;
 			}
 		}
@@ -260,8 +272,8 @@ class ksmess_engine{
 			}
 			//use mess_id to store attachments
 			if(($row = $rez->next())){
-				if($this->send_attachments($row[0]))
-					$errors[]=$to;
+				if($this->send_attachments($row[0], $message->attachments))
+					$errors[]=$message->to;
 			}
 		}
 		return $errors;
@@ -270,39 +282,40 @@ class ksmess_engine{
 	* @param int $user_id index of user for which we want to fing messages
 	* @param int $type only check for this tpe of message if not specified all types are returned
 	* @return array all finded message ids in array*/
-	function check(int $user_id, int $type=0){
+	function check($user_id, $type=0){
 		$rez = null;
 		try{
-			$rez = $this->db_conn->execute("SELECT * FROM ksmess.check(".$user_id."::int8, ".$type."::int2)");
+			//see ksmess.check for details. if type is 0 then return all user messages
+			$rez = $this->db_conn->execute("SELECT * FROM ksmess.checkm(".$user_id."::int8, ".$type."::int2)");
 		}
 		catch(Exception $e){
-			$this->log->error($e->getMessage());
+			$this->log->err($e->getMessage());
 		}
 		$mess_ids = array();
 		while($row = $rez->next())
 			$mess_ids[]=$row[0];
-		return $mes_ids;
+		return $mess_ids;
 	}
 	/**gets message from system
 	* @param string $message_id message id(index) which will be returned
 	* @return kmessage_out return object containgn all message data*/
-	function receive(string $message_id){
-		return new kmessage_out($message_id);
+	function &receive($message_id){
+		return new ksmessage_out($message_id);
 	}
 	/**delete message from system
 	* @param string $message_id id of message which will be deleted*/
-	function mdelete(string $message_id){
+	function mdelete($message_id){
 		$rez = null;
 		try{
-			$rez = $this->db_conn->execute("SELECT * FROM ksmess.del_mess('".$message_id."')";
+			$rez = $this->db_conn->execute("SELECT * FROM ksmess.del_mess('".$message_id."')");
 		}
 		catch(Exception $e){
-			$this->log->error($e->getMessage());
+			$this->log->err($e->getMessage());
 		}
-		if(($row=rez->next())
+		if(($row=$rez->next()))
 			if($row[0]=='t')
 				return true;
-		$this->log->error("Could not delete message. Reason unknown.");
+		$this->log->err("Could not delete message. Reason unknown.");
 		return false;
 	}	
 }

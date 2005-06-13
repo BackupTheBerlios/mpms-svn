@@ -1,7 +1,7 @@
 <?php
 
 /*
-    ksmess_conf - configuration file for mpms system messages library
+    test_ksmess.php - tests for mpms system messages library
     Copyright (C) 2005  Boris Tomić
 
     This program is free software; you can redistribute it and/or modify
@@ -17,26 +17,27 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
 */
-/**
-* This is solution for system messages for MPMS.
-* @package ksmess
-* @author Boris Tomic
-*/
-require_once 'kconf/kconf.php';
-require_once 'Log.php';
+require_once '../ksmess.php';
 
-class ksmess_conf{
-	const attachements_home="/home/ksmess/attachements";
-	const att_dir_tree_deep=2;
+//initase engine
+$engine =& new ksmess_engine();
+//create message to send
+$message =& new ksmessage_in(15,11,1,"Test 1", "Ovo je prvi test sa attachmentom!!!");
+$message->add_attachment("text.txt", "text/plain", new ksh_memory("Ovo je text u attachementu. Da vidimo."));
+
+$engine->send($message);
+$messages = $engine->check(11);
+foreach($messages as $value){
+	//$engine->mdelete($value);kfname_gen(ksmess_conf::att_dir_tree_deep)
+	$rec =& $engine->receive($value);
+	$no = $rec->count_attach();
+	for($i=0;$i<$no;$i++){
+		$att =& $rec->get_attachment($i);
+		$att_data=fread($att["fp"]->fp, 29000);
+		print $att_data;
+	}
+	//var_dump($rec);
 }
-
-//set log parameters
-
-function & get_ksmess_logger(){
-	return Log::singleton('error_log', PEAR_LOG_TYPE_SYSTEM, 'ksmess');
-}
-
 
 ?>
