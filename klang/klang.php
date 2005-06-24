@@ -19,12 +19,15 @@
 */
 
 require_once 'Smarty.class.php';
-
+/**configuration class
+* It holds all configuration variables*/
 class klang_conf{
+	/**used with sprintf to create regex to find all constans*/
 	const regex_all="(.*?)";
+	/**regex used to find constants (one and all)*/
 	const regex_one="'{ki\s+const=\"%s\"\s*}((.|\n|\r|\s)*?){/ki}'";
 }
-
+/**smarty prefilter which is used to get translations from xml file and to replace constants with translations*/
 function klang_smarty_prefilter($source, &$smarty){
 	//get_translations if any
 	$trans = array();
@@ -54,6 +57,7 @@ function klang_smarty_prefilter($source, &$smarty){
 	
 	return $source;
 }
+/**just helper function which loads translations from file*/
 function &klang_load_translations($file_name, $lang){
 	$trans = array();
 	$doc = new DOMDocument();
@@ -89,10 +93,12 @@ function &klang_load_translations($file_name, $lang){
 		klang_trigger_error("Could not load translation file (".$file_name.")");
 	return $trans;
 }
+/**one more helper function for loading translations from file*/
 function iloc_get_default($constant_node){
 	$default=$constant_node->getElementsByTagName("default");
 	return $default->item(0)->nodeValue;
 }
+/**helper function for producing error messages*/
 function klang_trigger_error($error_msg, $error_type=E_USER_WARNING){
 	trigger_error("klangSmarty error: ".$error_msg, $error_type);
 }
