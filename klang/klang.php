@@ -61,6 +61,7 @@ function klang_smarty_prefilter($source, &$smarty){
 function &klang_load_translations($file_name, $lang){
 	$trans = array();
 	$doc = new DOMDocument();
+	if(file_exists($file_name)){
 	if($doc->load($file_name)){
 		$constants = $doc->getElementsByTagName("constant");
 		for($i=0;$i<$constants->length;$i++){
@@ -91,6 +92,7 @@ function &klang_load_translations($file_name, $lang){
 	}
 	else
 		klang_trigger_error("Could not load translation file (".$file_name.")");
+	}//end of file exists
 	return $trans;
 }
 /**one more helper function for loading translations from file*/
@@ -126,8 +128,9 @@ class klangSmarty extends Smarty {
 		$this->assign("klang_trans_dir", $this->klang_trans_dir);
 		$this->assign("klang_debug", $this->klang_debug);
 		//check if file with tranaltions has changed and if it is force compile
-		if(filemtime($this->_get_auto_filename($this->compile_dir, $resource_name,$this->lang.$compile_id).".php")<filemtime($this->klang_trans_dir.DIRECTORY_SEPARATOR.$resource_name.".xml"))
-			$this->force_compile=true;
+		if(file_exists($this->klang_trans_dir.DIRECTORY_SEPARATOR.$resource_name.".xml"))
+			if(filemtime($this->_get_auto_filename($this->compile_dir, $resource_name,$this->lang.$compile_id).".php")<filemtime($this->klang_trans_dir.DIRECTORY_SEPARATOR.$resource_name.".xml"))
+				$this->force_compile=true;
 		parent::fetch($resource_name, $cache_id, $this->lang.$compile_id, $display);
 	}
 }
