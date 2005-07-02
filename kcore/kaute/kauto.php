@@ -32,7 +32,7 @@ require_once 'Smarty.class.php';
 require_once 'kauto_conf.php';
 require_once kconf::kodform_dir."/kodform.php";
 require_once kconf::kdb_dir."/kdb.php";
-require_once '../klang/klang.php';
+require_once kconf::klang_dir.'/klang.php';
 require_once '/usr/local/lib/php/Log.php';
 
 //$auth = new kauth("kauto_test.php");
@@ -156,6 +156,8 @@ class kauth{
 			return true;
 		}
 		//$this->logout(1);
+		$this->log->info("User \"".$_SESSION['kauth']['username']."\" was idle for too long so he/she is thrown from system.");
+		session_unset();
 		$this->idle_too_long = true;	
 		return false;
 	}
@@ -169,10 +171,10 @@ class kauth{
 	/**create kauth object
 	*
 	*It sets session parameters and checks authentification. If auth failed than displays login form.
-	*@param string $form_action login form action parametar
+	*@param string $form_action login form action parametar. Put here link which will be opened after login.
 	*@param Log $log log object to where all kauth log messages will go
 	*@param kdb_query $query object for db access and queries*/
-	function __construct($group=null, $form_action=null,&$log=null, &$query=null){
+	function __construct($form_action=null,&$log=null, &$query=null){
 		$this->form_action = $form_action;
 		//here you can set logging
 		if($log == null)
@@ -183,15 +185,12 @@ class kauth{
 			$this->query = &get_kdb_connection(); 
 		else
 			$this->query =& $query;
-		//to check xhtml coment out bleove code
+		//to check xhtml coment out code below
 		//this will disable authentification
 		$this->set_session();
-		if(!$this->check())
+		if(!$this->check()){
 			$this->login();
-		$this->save_session();
-		if(!$this->check_group($group)){
-			$this->no_premission();
-			exit(0);
+			$this->save_session();
 		}
 		//end of comment out for xhtml check
 
@@ -247,7 +246,7 @@ class kauth{
 	}
 	/**displays and process login form*/
 	function login(){
-		$smarty =& new Smarty();
+		$smarty =& new klangSmarty();
 		array_push($smarty->plugins_dir, kconf::kodform_plugin_dir);
 		if($this->idle_too_long)
 			$smarty->assign("idle", true);
@@ -258,34 +257,25 @@ class kauth{
 		$form->add_submit(new kauto_submit(&$this, &$smarty));
 
 		if(!$form->submited()){
-			klang::display(&$smarty,'klogin');
+			$smarty->display('klogin_en.tpl');
 			exit(0);
 		}
 	}
 	/**unsets all auth data (all session)
 	*
 	*@param integer $error error code if loout is forced*/
-	function logout($login_url=null ,$error = 0){	
-		switch($error){
-			case 0:
-				$this->log->info("User \"".$this->username."\" has left the system (logout)");
-				break;
-			case 1:
-				$this->log->info("User \"".$_SESSION['kauth']['username']."\" was idle for too long so he/she is thrown from system.");
-				break;
-			default:
-				$this->log->info("User \"".$this->username."\" thrown from/left the system (reason unknown)");
-		}
+	function logout($login_url=null){	
+		$this->log->info("User \"".$this->username."\" has left the system (logout)");
 		session_unset();
-		$smarty =& new Smarty();
+		$smarty =& new klangSmarty();
 		$smarty->assign("klogout_error", $error);
 		$smarty->assign("login_url", $login_url);
-		klang::display(&$smarty, 'klogout');
+		$smarty->display('klogout_en.tpl');
 	}
-	function no_premission(){
-		$smarty =& new Smarty();
+	function no_permission(){
+		$smarty =& new klangSmarty();
 		$smarty->assign("klogout_error", $error);
-		klang::display(&$smarty, 'kno_premission');
+		$smarty->display('kno_premission_en.tpl');
 	}
 }
 ?>

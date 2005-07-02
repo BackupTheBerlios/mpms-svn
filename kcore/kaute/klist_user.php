@@ -25,7 +25,7 @@ require_once 'kauto_conf.php';
 require_once kconf::kodform_dir.'/kodform.php';
 require_once kconf::logger;
 
-$auth = new kauth(null,"kuadmin.php");
+require 'kuadmin_check.php';
 
 class list_user_submit extends ksubmit{
 	private $admin;
@@ -49,7 +49,7 @@ class klist_user{
 	private $query;
 	function __construct(){
 		$this->log=&get_logger();
-		$this->smarty=&new Smarty();
+		$this->smarty=&new klangSmarty();
 		$this->query=&get_kdb_connection();
 	}
 
@@ -117,7 +117,7 @@ class klist_user{
 			while($row = $rez->next())
 				array_push($finded_users, $row);
 		}	
-		klang::display(&$this->smarty,'klist_user');
+		$this->smarty->display('klist_user_en.tpl');
 	}
 }
 

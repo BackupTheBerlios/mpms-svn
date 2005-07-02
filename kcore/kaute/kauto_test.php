@@ -20,7 +20,13 @@
 */
 require_once 'kauto.php';
 
-$auth = new kauth("test", "kauto_test.php");
+$auth = new kauth("kauto_test.php");
+
+if(!$auth->check_group("test")){
+	$smarty =& new Smarty();
+	$smarty->display("kno_premission_en.tpl");
+	exit(0);
+}
 
 var_dump($auth);
 if(isset($_GET['logout'])){

@@ -1,6 +1,6 @@
 <?php
 /*
-    kconf - authentification and access library
+    kaute - authentification and access library
     Copyright (C) 2005  Boris Tomić
 
     This program is free software; you can redistribute it and/or modify
@@ -18,24 +18,17 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 */
-
-require_once 'kconf/kconf.php';
-
-class kauto_conf{
-	/**where are */
-	const trans_dir="ilang";
+$auth =& new kauth("kuadmin.php");
+//check if user is in wanted group
+/*if($auth->check_group(kconf::admin_group)){
+	$auth->no_permission();
+	exit(0);
+}*/
+//if logout is initiaised logout
+if(isset($_GET['logout'])){
+	$auth->logout("kuadmin.php");
+	exit(0);
 }
 
-//set log parameters
-$klogger = null;
-
-//this name should be changes to more specific name for kauth logger
-//singelton method is doing this thing so it sould be changed completely
-function & get_logger(){
-	global $klogger;
-	if($klogger == null)
-		$klogger =&Log::singleton('error_log', PEAR_LOG_TYPE_SYSTEM, 'kauth');
-	return $klogger;
-}
 
 ?>

@@ -25,7 +25,7 @@ require_once 'kauto_conf.php';
 require_once kconf::kodform_dir.'/kodform.php';
 require_once kconf::logger;
 
-$auth = new kauth(kconf::admin_group,"kuadmin.php");
+require 'kuadmin_check.php';
 
 class new_user_submit extends ksubmit{
 	private $admin;
@@ -77,7 +77,7 @@ class knew_user{
 	
 	function __construct(){
 		$this->log=&get_logger();
-		$this->smarty=&new Smarty();	
+		$this->smarty=&new klangSmarty();	
 	}
 	
 	function new_user_UI(){
@@ -92,7 +92,7 @@ class knew_user{
 		$this->smarty->assign("mess",1);
 		if($form->submited())
 			$this->smarty->assign("mess",0);
-		klang::display(&$this->smarty,'knew_user');
+		$this->smarty->display('knew_user_en.tpl');
 	}
 }
 

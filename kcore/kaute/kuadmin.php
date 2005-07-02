@@ -25,20 +25,15 @@ require_once 'kauto_conf.php';
 require_once kconf::kodform_dir.'/kodform.php';
 require_once kconf::logger;
 
-$auth = new kauth(kconf::admin_group,"kuadmin.php");
-
-if(isset($_GET['logout'])){
-	$auth->logout("kuadmin.php");
-	exit(0);
-}
+require 'kuadmin_check.php';
 
 class admin{
 	private $smarty;
 	function __construct(){
-		$this->smarty=&new Smarty();
+		$this->smarty=&new klangSmarty();
 	}
 	function main(){
-		klang::display(&$this->smarty,"kuadmin");
+		$this->smarty->display("kuadmin_en.tpl");
 	}
 }
 
