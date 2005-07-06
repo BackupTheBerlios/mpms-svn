@@ -79,6 +79,8 @@ class kform{
 		if($this->is_valid()){
 			foreach($this->submits as $name => $value){
 				if(isset($_POST[$name])){
+					foreach($this->inputs as $input)
+						$input->process();
 					return $value->submited(&$this->inputs);
 				}
 			}
@@ -88,14 +90,14 @@ class kform{
 	/**add new input control
 	*
 	*@param kinput $input new input control to be passed*/
-	function add_input(&$input){
+	function add_input(kform_object &$input){
 		$this->inputs[$input->name] =& $input;
 	}
 
 	/**add new submitt control
 	*
 	*@param ksubmit $submit adds submit button*/
-	function add_submit(&$submit){
+	function add_submit(ksubmit &$submit){
 		$this->submits[$submit->name] =& $submit;
 	}
 	/**check is all input components of this form have valid values
@@ -135,9 +137,14 @@ class kv_min_max extends kvalidator{
 		return false;
 	}
 }
-
+abstract class kform_object{
+	abstract public function process();
+	abstract public function is_valid();
+	abstract public function get_value($ret_flag = false);
+	abstract public function set_value($value);
+}
 /**class which implements input tag logic*/
-class kinput{
+class kinput extends kform_object{
 	/**name of input*/
 	public $name;
 	/**value of input*/
@@ -154,13 +161,13 @@ class kinput{
 		if($validator==null)
 			$this->validator=&new kvalidator();
 		$this->name=$name;
-		$this->process();
+		//$this->process();
 		$smarty->assign_by_ref($this->name, $this);
 	}
 
 	/**protected class which implements processing of POST requiest.
 	*It is called in constructor.*/
-	protected function process(){
+	public function process(){
 		if(isset($_POST[$this->name])){
 			$this->value = $_POST[$this->name];
 		}
@@ -196,7 +203,7 @@ class kinput{
 *
 *You should use it with koption smarty function (see plugins)
 */
-class kddlist{
+class kddlist extends kform_object{
 	/**name of select*/
 	public $name;
 	/**value of select set by user*/
@@ -207,7 +214,7 @@ class kddlist{
 	function __construct($name, &$smarty){
 		$this->name=$name;
 		$smarty->assign_by_ref($this->name, $this);
-		$this->process();
+		//$this->process();
 	}
 	/**Internal method which process POST variable to set this iobject value*/
 	function process(){
@@ -238,7 +245,7 @@ class kddlist{
 }
 
 /**implements check box*/
-class kcheckbox{
+class kcheckbox extends kform_object{
 	/**name of select*/
 	public $name;
 	/**value of select set by user*/
@@ -252,7 +259,7 @@ class kcheckbox{
 		$this->name=$name;
 		$smarty->assign_by_ref($this->name, $this);	
 		$this->checked = $checked;
-		$this->process();
+		//$this->process();
 	}
 	
 	/**Internal method which process POST variable to set this iobject value*/
@@ -261,6 +268,8 @@ class kcheckbox{
 			$this->value=$_POST[$this->name];
 			$this->checked = true;
 		}
+		else
+			$this->checked = false;
 	}
 	/**Checks if value is valid. For this class it is always valid*/
 	function is_valid(){
