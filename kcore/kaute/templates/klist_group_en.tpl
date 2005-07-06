@@ -27,9 +27,14 @@
 {/foreach}
 </p>
 <table>
-<tr><th>Name</th><th>Description</th></tr>
+<tr><th>Name</th><th>Description</th><th>System</th></tr>
 {section name=groups loop=$fgroups}
 	<tr class="{cycle values="first, second"}"><td>{$fgroups[groups].name}</td><td>{$fgroups[groups].description}</td>
+{if $fgroups[groups].system == 'f'}
+<td>No</td>
+{else}
+<td>Yes</td>
+{/if}
 <td class="action"><a href="kchange_group.php?index={$fgroups[groups].index}">Change</a></td>
 <td class="action"><a href="kdel_group.php?gname={$fgroups[groups].name}&index={$fgroups[groups].index}">Delete</a></td>
 {if $fgroups[groups].enabled == 'f'}

@@ -25,7 +25,7 @@ require_once 'kauto_conf.php';
 require_once kconf::kodform_dir.'/kodform.php';
 require_once kconf::logger;
 
-$auth = new kauth(kconf::admin_group,"kuadmin.php");
+require 'kuadmin_check.php';
 
 class del_group_submit extends ksubmit{
 	private $query;
@@ -59,7 +59,7 @@ class del_group_submit extends ksubmit{
 
 class kdel_group{
 	function main(){
-		$smarty =&new Smarty();
+		$smarty =&new klangSmarty();
 		array_push($smarty->plugins_dir, kconf::kodform_plugin_dir);
 		$form =& new kform("kdel_group", &$smarty);
 		$kname =& new kinput("kname", &$smarty);
@@ -73,7 +73,7 @@ class kdel_group{
 		$form->add_submit(new del_group_submit(&$smarty));
 		if($form->submited())
 			$smarty->assign("mess", 1);
-		klang::display(&$smarty,'kdel_group');
+		$smarty->display('kdel_group_en.tpl');
 	}
 }
 

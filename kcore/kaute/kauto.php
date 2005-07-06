@@ -214,7 +214,9 @@ class kauth{
 				$this->userindex=$_SESSION['kauth']['userindex'];
 				$this->groups=$_SESSION['kauth']['groups'];
 				$this->last_reg_time=$_SESSION['kauth']['reg_time'];
-				$this->time=time();
+				//save new action time
+				$_SESSION['kauth']['time']=time();
+				$this->time=$_SESSION['kauth']['time'];
 				if(kauth::ip_check)
 					$this->user_ip=$_SESSION['kauth']['ip'];
 				//see if session id has to be regenerated

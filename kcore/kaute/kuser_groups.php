@@ -25,7 +25,7 @@ require_once 'kauto_conf.php';
 require_once kconf::kodform_dir.'/kodform.php';
 require_once kconf::logger;
 
-$auth = new kauth(kconf::admin_group,"kuadmin.php");
+require 'kuadmin_check.php';
 
 //handles group list display option form
 class ulist_group_submit extends ksubmit{
@@ -88,7 +88,7 @@ class kuser_groups{
 	public $query;
 	function __construct(){
 		$this->log=&get_logger();
-		$this->smarty=&new Smarty();
+		$this->smarty=&new klangSmarty();
 		$this->query=&get_kdb_connection();
 	}
 
@@ -171,7 +171,7 @@ class kuser_groups{
 					$value['cb']->checked=true;
 			}
 		}	
-		klang::display(&$this->smarty,'kuser_group');
+		$this->smarty->display('kuser_group_en.tpl');
 	}
 
 		/*$smarty=&new Smarty();

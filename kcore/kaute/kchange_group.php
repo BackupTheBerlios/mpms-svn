@@ -25,7 +25,7 @@ require_once 'kauto_conf.php';
 require_once kconf::kodform_dir.'/kodform.php';
 require_once kconf::logger;
 
-$auth = new kauth(kconf::admin_group,"kuadmin.php");
+require 'kuadmin_check.php';
 
 class change_group_submit extends ksubmit{
 	private $query;
@@ -37,8 +37,11 @@ class change_group_submit extends ksubmit{
 	}
 	function submited(&$inputs){
 		$rez=null;
+		$is_system="false";
+		if($inputs['system']->checked)
+			$is_system="true";
 		try{
-			$rez =&$this->query->execute("SELECT * FROM kaute.change_group('".$inputs['description']->get_value()."',".$inputs['index']->get_value().")");
+			$rez =&$this->query->execute("SELECT * FROM kaute.change_group('".$inputs['description']->get_value()."',".$inputs['index']->get_value().",".$is_system.")");
 		}
 		catch(Exception $e){
 			$this->log->emerg($e->getMessage());
@@ -60,9 +63,8 @@ class kchange_group{
 	private $query;
 	private $log;
 	function __construct(){
-		$this->smarty=&new Smarty();
+		$this->smarty=&new klangSmarty();
 		array_push($this->smarty->plugins_dir, kconf::kodform_plugin_dir);
-		array_push($this->smarty->plugins_dir, kconf::klang_plugin_dir);
 		$this->query= &get_kdb_connection();
 		$this->log =& get_logger();
 	}
@@ -75,6 +77,9 @@ class kchange_group{
 		$kdesc =& new kinput("description", &$this->smarty, new kv_min_max(0, 200));
 		
 		$form->add_input(&$kdesc);
+		$ksys =& new kcheckbox("system", &$this->smarty);
+		$form->add_input(&$ksys);
+
 		$form->add_submit(new change_group_submit(&$this->smarty));
 		//get data from database
 		$rez=null;
@@ -90,6 +95,8 @@ class kchange_group{
 					$kname->set_value($row['name']);
 					$kindex->set_value($row['index']);
 					$kdesc->set_value($row['description']);
+					if($row['system']=='t')
+						$ksys->checked=true;
 				}
 			}
 		}

@@ -25,7 +25,7 @@ require_once 'kauto_conf.php';
 require_once kconf::kodform_dir.'/kodform.php';
 require_once kconf::logger;
 
-$auth = new kauth(kconf::admin_group,"kuadmin.php");
+require 'kuadmin_check.php';
 
 class change_pass_submit extends ksubmit{
 	private $cpass;
@@ -66,7 +66,7 @@ class change_pass_submit extends ksubmit{
 class kchange_pass{
 	public $smarty;
 	function __construct(){
-		$this->smarty=&new Smarty();
+		$this->smarty=&new klangSmarty();
 		array_push($this->smarty->plugins_dir, kconf::kodform_plugin_dir);
 	}
 	function main(){
@@ -84,7 +84,7 @@ class kchange_pass{
 		$form->add_submit(new change_pass_submit(&$this));
 		if($form->submited())
 			$this->smarty->assign("mess", 1);
-		klang::display(&$this->smarty,'kchange_pass_start');	
+		$this->smarty->display('kchange_pass_start_en.tpl');	
 	}
 }
 $chpage =&new kchange_pass;

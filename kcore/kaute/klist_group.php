@@ -25,7 +25,7 @@ require_once 'kauto_conf.php';
 require_once kconf::kodform_dir.'/kodform.php';
 require_once kconf::logger;
 
-$auth = new kauth(kconf::admin_group,"kuadmin.php");
+require 'kuadmin_check.php';
 
 class list_group_submit extends ksubmit{
 	private $admin;
@@ -49,7 +49,7 @@ class klist_group{
 	private $query;
 	function __construct(){
 		$this->log=&get_logger();
-		$this->smarty=&new Smarty();
+		$this->smarty=&new klangSmarty();
 		$this->query=&get_kdb_connection();
 	}
 	
@@ -116,7 +116,7 @@ class klist_group{
 			while($row = $rez->next())
 				array_push($finded_groups, $row);
 		}	
-		klang::display(&$this->smarty,'klist_group');
+		$this->smarty->display('klist_group_en.tpl');
 	}
 }
 

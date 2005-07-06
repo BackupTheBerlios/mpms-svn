@@ -25,7 +25,7 @@ require_once 'kauto_conf.php';
 require_once kconf::kodform_dir.'/kodform.php';
 require_once kconf::logger;
 
-$auth = new kauth(kconf::admin_group,"kuadmin.php");
+require 'kuadmin_check.php';
 
 class dis_group_submit extends ksubmit{
 	private $query;
@@ -58,7 +58,7 @@ class dis_group_submit extends ksubmit{
 }
 class kdis_group{
 	function main(){
-		$smarty =&new Smarty();
+		$smarty =&new klangSmarty();
 		array_push($smarty->plugins_dir, kconf::kodform_plugin_dir);
 		$form =& new kform("kdis_group", &$smarty);
 		$kname =& new kinput("kname", &$smarty);
@@ -72,7 +72,7 @@ class kdis_group{
 		$form->add_submit(new dis_group_submit(&$smarty));
 		if($form->submited())
 			$smarty->assign("mess", 1);
-		klang::display(&$smarty,'kdis_group');
+		$smarty->display('kdis_group_en.tpl');
 	}
 }
 

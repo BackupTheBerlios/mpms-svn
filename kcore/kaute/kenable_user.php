@@ -25,7 +25,7 @@ require_once 'kauto_conf.php';
 require_once kconf::kodform_dir.'/kodform.php';
 require_once kconf::logger;
 
-$auth = new kauth(kconf::admin_group,"kuadmin.php");
+require 'kuadmin_check.php';
 
 class ena_user_submit extends ksubmit{
 	private $query;
@@ -58,7 +58,7 @@ class ena_user_submit extends ksubmit{
 }
 class kena_user{
 	function main(){
-		$smarty =&new Smarty();
+		$smarty =&new klangSmarty();
 		array_push($smarty->plugins_dir, kconf::kodform_plugin_dir);
 		$form =& new kform("kena_user", &$smarty);
 		$kname =& new kinput("kname", &$smarty);
@@ -72,7 +72,7 @@ class kena_user{
 		$form->add_submit(new ena_user_submit(&$smarty));
 		if($form->submited())
 			$smarty->assign("mess", 1);
-		klang::display(&$smarty,'kena_user');
+		$smarty->display('kena_user_en.tpl');
 	}
 }
 

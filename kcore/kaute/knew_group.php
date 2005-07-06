@@ -37,8 +37,11 @@ class new_group_submit extends ksubmit{
 	}
 	function submited(&$inputs){
 		$rez=null;
+		$is_system="false";
+		if($inputs['system']->checked)
+			$is_system="true";
 		try{
-			$rez =&$this->query->execute("SELECT * FROM kaute.new_group('".$inputs['gname']->get_value()."','".$inputs['description']->get_value()."');");
+			$rez =&$this->query->execute("SELECT * FROM kaute.new_group('".$inputs['gname']->get_value()."','".$inputs['description']->get_value()."',".$is_system.");");
 		}
 		catch(Exception $e){
 			$this->log->emerg($e->getMessage());
@@ -64,6 +67,7 @@ class knew_group{
 		$kname =& new kinput("gname", &$smarty, new kv_min_max(1, 20));
 		$form->add_input(&$kname);
 		$form->add_input(new kinput("description", &$smarty, new kv_min_max(0, 200)));
+		$form->add_input(new kcheckbox("system", &$smarty, true));
 		$form->add_submit(new new_group_submit(&$smarty));
 		if($form->submited())
 			$smarty->assign("mess", 1);

@@ -18,6 +18,8 @@
 {kinput name=$kname type="hidden"}
 <div>New Description for Group "{$kname->get_value()}"</div>
 {ktextarea name=$description rows="5" cols="50"}<br />
+{kinput name=$system type="checkbox" label="System Group"}
+<hr />
 {kinput name=$change_group type="submit" label="Change" class="ksubmit"}
 </form>
 </fieldset>

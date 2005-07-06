@@ -13,10 +13,12 @@
 {knot_valid name=$description}<div class="error">Group description should be maximum 200 charachters long.</div>{/knot_valid}
 <form id="{$knew_user->name}" method="post" action="knew_group.php">
 <fieldset title="New User"><legend>New Group</legend>
-{kinput name=$gname label="Username" type="text"}
+{kinput name=$gname label="Name" type="text"}
 <hr style="height: 1px;"/>
 {ktextarea name=$description rows="5" cols="50" label="Group Description"}
 <br />
+{kinput name=$system lable="System Group" type="checkbox"}
+<hr />
 {kinput name=$new_group type="submit" label="Create" class="ksubmit"}
 </fieldset>
 </form>
