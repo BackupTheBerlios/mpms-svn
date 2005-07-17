@@ -32,7 +32,6 @@ require_once 'Smarty.class.php';
 require_once 'kauto_conf.php';
 require_once kconf::kodform_dir."/kodform.php";
 require_once kconf::kdb_dir."/kdb.php";
-require_once kconf::klang_dir.'/klang.php';
 require_once '/usr/local/lib/php/Log.php';
 
 //$auth = new kauth("kauto_test.php");
@@ -210,15 +209,17 @@ class kauth{
 	function check(){
 		if(isset($_SESSION['kauth'])){
 			if(($_SESSION['kauth']['ip']==$_SERVER['REMOTE_ADDR'] || !kauth::ip_check) && $this->session_life_check()){
-				$this->username=$_SESSION['kauth']['username'];
-				$this->userindex=$_SESSION['kauth']['userindex'];
-				$this->groups=$_SESSION['kauth']['groups'];
-				$this->last_reg_time=$_SESSION['kauth']['reg_time'];
+				if($this->username===null && $this->userindex===null){
+					$this->username=$_SESSION['kauth']['username'];
+					$this->userindex=$_SESSION['kauth']['userindex'];
+					$this->groups=$_SESSION['kauth']['groups'];
+					$this->last_reg_time=$_SESSION['kauth']['reg_time'];
+					if(kauth::ip_check)
+						$this->user_ip=$_SESSION['kauth']['ip'];
+				}
 				//save new action time
 				$_SESSION['kauth']['time']=time();
-				$this->time=$_SESSION['kauth']['time'];
-				if(kauth::ip_check)
-					$this->user_ip=$_SESSION['kauth']['ip'];
+				$this->time=$_SESSION['kauth']['time'];	
 				//see if session id has to be regenerated
 				$this->session_rege_check();
 				return true;
@@ -248,7 +249,7 @@ class kauth{
 	}
 	/**displays and process login form*/
 	function login(){
-		$smarty =& new klangSmarty();
+		$smarty =& new kautoSmarty();
 		array_push($smarty->plugins_dir, kconf::kodform_plugin_dir);
 		if($this->idle_too_long)
 			$smarty->assign("idle", true);
@@ -269,7 +270,7 @@ class kauth{
 	function logout($login_url=null){	
 		$this->log->info("User \"".$this->username."\" has left the system (logout)");
 		session_unset();
-		$smarty =& new klangSmarty();
+		$smarty =& new kautoSmarty();
 		$smarty->assign("klogout_error", $error);
 		$smarty->assign("login_url", $login_url);
 		$smarty->display('klogout_en.tpl');

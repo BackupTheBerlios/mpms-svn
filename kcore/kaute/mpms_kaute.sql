@@ -1,20 +1,3 @@
---    kaute - authentification and access library - database dump file
---    Copyright (C) 2005  Boris Tomić
---
---    This program is free software; you can redistribute it and/or modify
---    it under the terms of the GNU General Public License as published by
---    the Free Software Foundation; either version 2 of the License, or
---    (at your option) any later version.
---
---    This program is distributed in the hope that it will be useful,
---    but WITHOUT ANY WARRANTY; without even the implied warranty of
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
---    GNU General Public License for more details.
---
---    You should have received a copy of the GNU General Public License
---    along with this program; if not, write to the Free Software
---    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
 --
 -- PostgreSQL database dump
 --
@@ -68,7 +51,8 @@ CREATE TABLE groups (
     "index" bigint DEFAULT nextval('kaute.groups_sek'::text) NOT NULL,
     name character varying(20) NOT NULL,
     description character varying(200),
-    enabled boolean DEFAULT true NOT NULL
+    enabled boolean DEFAULT true NOT NULL,
+    system boolean DEFAULT true
 ) WITHOUT OIDS;
 
 
@@ -96,7 +80,7 @@ CREATE SEQUENCE groups_sek
 
 
 --
--- TOC entry 22 (OID 20155)
+-- TOC entry 23 (OID 20155)
 -- Name: get_user_groups(bigint); Type: FUNCTION; Schema: kaute; Owner: kodmasin
 --
 
@@ -116,7 +100,7 @@ END;
 
 
 --
--- TOC entry 21 (OID 20159)
+-- TOC entry 22 (OID 20159)
 -- Name: authentify(character varying, character varying, smallint); Type: FUNCTION; Schema: kaute; Owner: kodmasin
 --
 
@@ -159,7 +143,7 @@ END;
 
 
 --
--- TOC entry 14 (OID 20165)
+-- TOC entry 15 (OID 20165)
 -- Name: new_user(character varying, character varying); Type: FUNCTION; Schema: kaute; Owner: kodmasin
 --
 
@@ -188,7 +172,7 @@ END;
 
 
 --
--- TOC entry 16 (OID 20168)
+-- TOC entry 17 (OID 20168)
 -- Name: list_users(character varying, smallint, smallint); Type: FUNCTION; Schema: kaute; Owner: kodmasin
 --
 
@@ -210,7 +194,7 @@ END;
 
 
 --
--- TOC entry 17 (OID 20170)
+-- TOC entry 18 (OID 20170)
 -- Name: count_users(character varying); Type: FUNCTION; Schema: kaute; Owner: kodmasin
 --
 
@@ -228,7 +212,7 @@ END;
 
 
 --
--- TOC entry 18 (OID 20171)
+-- TOC entry 19 (OID 20171)
 -- Name: chpass_user(bigint, character varying); Type: FUNCTION; Schema: kaute; Owner: kodmasin
 --
 
@@ -251,7 +235,7 @@ END;
 
 
 --
--- TOC entry 19 (OID 20172)
+-- TOC entry 20 (OID 20172)
 -- Name: del_user(bigint); Type: FUNCTION; Schema: kaute; Owner: kodmasin
 --
 
@@ -273,7 +257,7 @@ END;
 
 
 --
--- TOC entry 20 (OID 20173)
+-- TOC entry 21 (OID 20173)
 -- Name: dis_user(bigint, smallint); Type: FUNCTION; Schema: kaute; Owner: kodmasin
 --
 
@@ -287,35 +271,6 @@ BEGIN
 	UPDATE kaute.kaute SET failed=$2 WHERE index=uindex;
 	IF FOUND THEN
 		ret:=true;
-	END IF;
-	RETURN ret;
-END;
-'
-    LANGUAGE plpgsql;
-
-
---
--- TOC entry 23 (OID 20178)
--- Name: new_group(character varying, character varying); Type: FUNCTION; Schema: kaute; Owner: kodmasin
---
-
-CREATE FUNCTION new_group(character varying, character varying) RETURNS smallint
-    AS '
-DECLARE
-	gname ALIAS FOR $1;
-	gdesc ALIAS FOR $2;
-	ret int2;
-	temp int8;
-BEGIN
-	ret := 0;
-	SELECT INTO temp index FROM kaute.groups WHERE name=gname;
-	IF NOT FOUND THEN
-		INSERT INTO kaute.groups (name, description) VALUES(gname, gdesc);
-		IF FOUND THEN
-			ret := 1;
-		END IF;
-	ELSE
-		RET:= 2;
 	END IF;
 	RETURN ret;
 END;
@@ -382,30 +337,7 @@ END;
 
 
 --
--- TOC entry 27 (OID 20183)
--- Name: change_group(character varying, bigint); Type: FUNCTION; Schema: kaute; Owner: kodmasin
---
-
-CREATE FUNCTION change_group(character varying, bigint) RETURNS boolean
-    AS '
-DECLARE
-	gdesc ALIAS FOR $1;
-	gin ALIAS FOR $2;
-	ret boolean;
-BEGIN
-	ret := false;
-	UPDATE kaute.groups SET description=gdesc  WHERE index=gin;
-	IF FOUND THEN
-		ret := true;
-	END IF;	
-	RETURN ret;
-END;
-'
-    LANGUAGE plpgsql;
-
-
---
--- TOC entry 28 (OID 20184)
+-- TOC entry 27 (OID 20184)
 -- Name: del_group(bigint); Type: FUNCTION; Schema: kaute; Owner: kodmasin
 --
 
@@ -427,7 +359,7 @@ END;
 
 
 --
--- TOC entry 29 (OID 20186)
+-- TOC entry 28 (OID 20186)
 -- Name: ed_group(bigint, boolean); Type: FUNCTION; Schema: kaute; Owner: kodmasin
 --
 
@@ -449,7 +381,7 @@ END;
 
 
 --
--- TOC entry 15 (OID 20194)
+-- TOC entry 16 (OID 20194)
 -- Name: user_groups(character varying, smallint, smallint, bigint); Type: FUNCTION; Schema: kaute; Owner: kodmasin
 --
 
@@ -505,6 +437,60 @@ BEGIN
 		END LOOP;
 	END IF;
 	RETURN;
+END;
+'
+    LANGUAGE plpgsql;
+
+
+--
+-- TOC entry 29 (OID 20979)
+-- Name: change_group(character varying, bigint, boolean); Type: FUNCTION; Schema: kaute; Owner: kodmasin
+--
+
+CREATE FUNCTION change_group(character varying, bigint, boolean) RETURNS boolean
+    AS '
+DECLARE
+	gdesc ALIAS FOR $1;
+	gin ALIAS FOR $2;
+	gsys ALIAS FOR $3;
+	ret boolean;
+BEGIN
+	ret := false;
+	UPDATE kaute.groups SET description=gdesc, system=gsys  WHERE index=gin;
+	IF FOUND THEN
+		ret := true;
+	END IF;	
+	RETURN ret;
+END;
+'
+    LANGUAGE plpgsql;
+
+
+--
+-- TOC entry 14 (OID 20980)
+-- Name: new_group(character varying, character varying, boolean); Type: FUNCTION; Schema: kaute; Owner: kodmasin
+--
+
+CREATE FUNCTION new_group(character varying, character varying, boolean) RETURNS smallint
+    AS '
+DECLARE
+	gname ALIAS FOR $1;
+	gdesc ALIAS FOR $2;
+	gsys ALIAS FOR $3;
+	ret int2;
+	temp int8;
+BEGIN
+	ret := 0;
+	SELECT INTO temp index FROM kaute.groups WHERE name=gname;
+	IF NOT FOUND THEN
+		INSERT INTO kaute.groups (name, description, system) VALUES(gname, gdesc, gsys);
+		IF FOUND THEN
+			ret := 1;
+		END IF;
+	ELSE
+		RET:= 2;
+	END IF;
+	RETURN ret;
 END;
 '
     LANGUAGE plpgsql;

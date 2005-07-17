@@ -20,6 +20,7 @@
 */
 
 require_once 'kconf/kconf.php';
+require_once kconf::klang_dir.'/klang.php';;
 
 class kauto_conf{
 	/**where are */
@@ -36,6 +37,17 @@ function & get_logger(){
 	if($klogger == null)
 		$klogger =&Log::singleton('error_log', PEAR_LOG_TYPE_SYSTEM, 'kauth');
 	return $klogger;
+}
+
+class kautoSmarty extends klangSmarty{
+	function __construct($lang="", $debug=false){
+		parent::__construct($lang,$debug);
+		$this->template_dir=kconf::install_root_dir."/kaute/templates";
+		$this->compile_dir=kconf::install_root_dir."/kaute/templates_c";
+		$this->config_dir=kconf::install_root_dir."/kaute/config";
+		$this->cache_dir=kconf::install_root_dir."/kaute/cache";
+		$this->assign("css_dir","http://".kconf::host_name."/kcore/kaute/css");
+	}
 }
 
 ?>

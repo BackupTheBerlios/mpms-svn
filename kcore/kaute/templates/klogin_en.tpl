@@ -1,5 +1,5 @@
 {capture name="css"}
-<link rel="stylesheet" type="text/css" href="css/kauto.css" />{/capture}
+<link rel="stylesheet" type="text/css" href="{$css_dir}/kauto.css" />{/capture}
 {include file="kheader_en.tpl" kptitle="{ki const="login"}Login{/ki}" kpcss=$smarty.capture.css}
 {if $login_error == -1}
 <div class="error">{ki const="err_disabled"}Your accaunt is disabled please contact system administrator.{/ki}</div>
