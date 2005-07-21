@@ -137,6 +137,23 @@ class kv_min_max extends kvalidator{
 		return false;
 	}
 }
+/**regex validator class
+*
+* you can use it to check field value against regex expression*/
+class kv_regex extends kv_min_max{
+	private $regex;
+	function __construct($min, $max, $regex){
+		parent::__construct($min, $max);
+		$this->regex=$regex;
+	}
+	function is_valid($value){
+		if(parent::is_valid($value)){
+			if(preg_match($this->regex, $value)===1)
+				retrun true;
+		}
+		return false;	
+	}
+}
 abstract class kform_object{
 	abstract public function process();
 	abstract public function is_valid();
@@ -147,8 +164,9 @@ abstract class kform_object{
 class kinput extends kform_object{
 	/**name of input*/
 	public $name;
-	/**value of input*/
-	private $value = null;
+	/**value of input
+	* this is public variable but you should use get_value if you want valid value*/
+	public $value = null;
 	/**validator of input*/
 	private $validator;
 	/**creates new kinput object
