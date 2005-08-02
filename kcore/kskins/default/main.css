@@ -1,0 +1,99 @@
+/*default - style sheets for mpms*/
+/*body class*/
+body.mpms_body{
+	margin:0px;
+	padding: 0px;
+	font-family: Arial, sans-serif;
+	background-color:white ;
+}
+#mpms_header{
+	background-color: blue;
+	padding:0px;
+	margin: 0px;
+	width: 100%;
+	min-height: 60px;
+}
+#mpms_logo{
+	font-size: 50pt;
+	margin: 0px;
+	float:left;
+	font-weight: bold;
+	color: white;
+	padding: 0px;
+}
+#mpms_hmess{
+	width: 100%;
+	padding-top: 0px;
+	text-align: right;
+	color: white;
+}
+#mpms_hmess a{
+	color: white;
+}
+#mpms_menu{
+	clear: both;
+	text-align: center;
+}
+#mpms_menu a{
+	color: blue;
+	text-decoration: none;
+}
+#mpms_menu a:hover{
+	color: red;
+	text-decoration: none;
+}
+div.modules_first{
+	display: inline;
+}
+div.modules{
+	display: inline;
+}
+#mpms_footer{
+	background-color: blue;
+	width: 100%;
+	font-size: 8pt;
+	color: white;
+	text-align: center;
+	margin: 0px;
+	padding: 0px;
+}
+#mpms_footer p{
+	margin: 0px;
+	padding: 0px;
+
+}
+#mpms_module{
+	min-height: 400px;
+}
+#mpms_module p.welcome_msg{
+	color: blue;
+	font-size: 16pt;
+	margin: 0px;
+	padding: 20px;
+}
+#mpms_module_menu{
+	background-color: #9FB7DF;
+	width:150px;
+	padding-left: 10px;
+	min-height: 400px;
+	float: left;
+}
+div.mpms_menu_head{
+	color: white;
+	text-decoration: underline;
+	font-weight: bold;
+	font-size: 14pt;
+}
+a.mpms_menu_link{
+	color: white;
+	text-decoration: none;
+	font-weight: bold;
+	font-size: 12pt;
+}
+a.mpms_menu_link : hover{
+	color: blue;
+}
+#mpms_module_body{
+	padding-left: 180px;
+	padding-top: 20px;
+}
