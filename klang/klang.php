@@ -104,6 +104,19 @@ function iloc_get_default($constant_node){
 function klang_trigger_error($error_msg, $error_type=E_USER_WARNING){
 	trigger_error("klangSmarty error: ".$error_msg, $error_type);
 }
+/**this is function which implements printf PHP function
+* I tought that smarty by default has that but could not find it
+* is exist use default smartys function.
+* It can take maksimum of 10 arguments and format string*/
+function klang_printf($params, &$samrty){
+	if(isset($params['format'])){
+		$pf = array($params['format']);
+		for($i=0;$i<10;$i++)
+			if(isset($params['arg'.$i]))
+				array_push($pf, $params['arg'.$i]);
+		return call_user_func_array("sprintf", &$pf);
+	}
+}
 
 /**this class extends Smarty class to add translation support*/
 class klangSmarty extends Smarty {
@@ -120,6 +133,7 @@ class klangSmarty extends Smarty {
 		$this->lang=$lang;
 		$this->klang_debug = $debug;
 		$this->register_prefilter("klang_smarty_prefilter");
+		$this->register_function("kprintf", "klang_printf");
 	}
 	/**this is just overiden method of parent (Smarty)
 	* it has same function, only addition is initalization of translations array*/
