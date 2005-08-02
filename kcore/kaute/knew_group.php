@@ -32,7 +32,7 @@ class new_group_submit extends ksubmit{
 	private $log;
 	function __construct(&$smarty){
 		parent::__construct("new_group", &$smarty);
-		$this->query=get_kdb_connection();
+		$this->query=&get_kdb_connection();
 		$this->log =& get_logger();
 	}
 	function submited(&$inputs){

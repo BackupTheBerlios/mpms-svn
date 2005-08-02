@@ -404,7 +404,7 @@ END;
 
 
 --
--- TOC entry 30 (OID 20195)
+-- TOC entry 31 (OID 20195)
 -- Name: set_user_groups(bigint, bigint[]); Type: FUNCTION; Schema: kaute; Owner: kodmasin
 --
 
@@ -443,7 +443,7 @@ END;
 
 
 --
--- TOC entry 29 (OID 20979)
+-- TOC entry 30 (OID 20979)
 -- Name: change_group(character varying, bigint, boolean); Type: FUNCTION; Schema: kaute; Owner: kodmasin
 --
 
@@ -497,6 +497,29 @@ END;
 
 
 --
+-- TOC entry 29 (OID 20985)
+-- Name: initize(character varying); Type: FUNCTION; Schema: kaute; Owner: kodmasin
+--
+
+CREATE FUNCTION initize(character varying) RETURNS void
+    AS '
+DECLARE
+	pass ALIAS FOR $1;
+	useri int8;
+	groupi int8;
+BEGIN
+	INSERT INTO kaute.groups (name, description, system) VALUES(''admin'', ''user and group system administration group'', true);
+	INSET INTO kaute.kaute (username, passwd) VALUE(""admin"", pass);
+	SELECT INTO useri index FROM kaute.kaute WHERE username=""admin"";
+	SELECT INTO groupi index FROM kaute.groups WHERE name=""admin"";
+	INSERT INTO kaute.user_group (user_index, group_index) VALUES(useri,groupi);
+	RETURN;
+END;
+'
+    LANGUAGE plpgsql;
+
+
+--
 -- TOC entry 9 (OID 20116)
 -- Name: kauth_pk; Type: CONSTRAINT; Schema: kaute; Owner: kodmasin
 --
@@ -542,7 +565,7 @@ ALTER TABLE ONLY user_group
 
 
 --
--- TOC entry 31 (OID 20136)
+-- TOC entry 32 (OID 20136)
 -- Name: user_group_user; Type: FK CONSTRAINT; Schema: kaute; Owner: kodmasin
 --
 
@@ -551,7 +574,7 @@ ALTER TABLE ONLY user_group
 
 
 --
--- TOC entry 32 (OID 20142)
+-- TOC entry 33 (OID 20142)
 -- Name: user_group_group; Type: FK CONSTRAINT; Schema: kaute; Owner: kodmasin
 --
 

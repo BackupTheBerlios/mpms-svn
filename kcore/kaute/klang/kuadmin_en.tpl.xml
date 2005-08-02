@@ -1,0 +1,3 @@
+<?xml version="1.0"?>
+<!DOCTYPE iloc SYSTEM "http://localhost/iloc/xml/iloc.dtd">
+<iloc version="0.1"><langs/><constants><constant name="user_admin"><default>User Administration</default></constant><constant name="new_user"><default>New User</default></constant><constant name="edit_user"><default>Edit User</default></constant><constant name="new_group"><default>New Group</default></constant><constant name="edit_group"><default>Edit Group</default></constant><constant name="logout"><default>Logout</default></constant></constants></iloc>

@@ -124,7 +124,7 @@ class kauth{
 	/**Let say this is session idle time
 	*
 	*If user is idle for this time session will become not valid*/
-	const session_time=10;//min 
+	const session_time=30;//min 
 	/**How often is session regenerated*/
 	const session_regenerate=4;//min
 	/**How many times user can enter wrong password or user name*/
@@ -216,12 +216,12 @@ class kauth{
 					$this->last_reg_time=$_SESSION['kauth']['reg_time'];
 					if(kauth::ip_check)
 						$this->user_ip=$_SESSION['kauth']['ip'];
+					//see if session id has to be regenerated
+					$this->session_rege_check();
 				}
 				//save new action time
 				$_SESSION['kauth']['time']=time();
-				$this->time=$_SESSION['kauth']['time'];	
-				//see if session id has to be regenerated
-				$this->session_rege_check();
+				$this->time=$_SESSION['kauth']['time'];		
 				return true;
 			}
 		}
