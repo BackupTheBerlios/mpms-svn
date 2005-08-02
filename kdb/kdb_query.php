@@ -51,7 +51,16 @@ class kdb_query{
 	*@param string $query string containing SQL cuery
 	*@return kdb_result kdb_rezult object containg rezults*/
 	function &execute($query){
-		$res = pg_query($this->conn->get_conn(), $query);
+		$res =&pg_query($this->conn->get_conn(), $query);
+		if($res == false)
+			throw new kdb_query_err();
+		return new kdb_qresult(&$res);
+	}
+	/**execute SQL query with given params
+	*
+	* it uses pg_query_params which is more prone to SQL injections*/
+	function &query_params($query, $params){
+		$res =&pg_query_params($this->conn->get_conn(),  $query, $params);
 		if($res == false)
 			throw new kdb_query_err();
 		return new kdb_qresult(&$res);

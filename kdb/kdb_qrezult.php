@@ -54,9 +54,9 @@ class kdb_qresult{
 		return pg_num_rows($this->res);
 	}
 	/**
-	*returns number of affected rows. Used for I NSERT, UPDATE, and DELETE queries.
+	*returns number of affected rows. Used for INSERT, UPDATE, and DELETE queries.
 	*/
-	function affected_rows(){
+	function affected_rows(){	
 		return pg_affected_rows($this->res);
 	}
 	/**
