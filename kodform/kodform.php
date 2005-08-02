@@ -76,13 +76,12 @@ class kform{
 	*
 	*@return boolean true if form is submited and valid else false*/
 	function submited(){
-		if($this->is_valid()){
-			foreach($this->submits as $name => $value){
-				if(isset($_POST[$name])){
-					foreach($this->inputs as $input)
-						$input->process();
+		foreach($this->submits as $name => $value){
+			if(isset($_POST[$name])){
+				foreach($this->inputs as $input)
+					$input->process();
+				if($this->is_valid())
 					return $value->submited(&$this->inputs);
-				}
 			}
 		}
 		return false;
@@ -109,6 +108,16 @@ class kform{
 				return false;
 		}
 		return true;
+	}
+	/**resets form inputs.
+	* It set all form input values to null. Useful when from is processed and new input is expected.*/
+	function freset(){
+		foreach($this->inputs as $input){
+			$input->value=null;
+		}
+	}
+	function submit($sname){
+		$_POST[$sname]=1;	
 	}
 }
 
@@ -149,7 +158,7 @@ class kv_regex extends kv_min_max{
 	function is_valid($value){
 		if(parent::is_valid($value)){
 			if(preg_match($this->regex, $value)===1)
-				retrun true;
+				return true;
 		}
 		return false;	
 	}
@@ -168,7 +177,7 @@ class kinput extends kform_object{
 	* this is public variable but you should use get_value if you want valid value*/
 	public $value = null;
 	/**validator of input*/
-	private $validator;
+	protected $validator;
 	/**creates new kinput object
 	*@param string $name neame of kinput component same as input tag name attribute
 	*@param smarty $smarty object ro wich this component will be assigned by ref
@@ -214,6 +223,18 @@ class kinput extends kform_object{
 	function set_value($value){
 		$this->value=$value;
 		//$smarty->assign_by_ref($this->name, $this);
+	}
+}
+/**usefull class whan empty values have to have null value instead empty string
+you should use get_value() fuinction to get value otherwise ($object->value) it want work correctly*/
+class kdb_input extends kinput{
+	/**overiden function which converts empty string to null value*/
+	function get_db_value($ret_flag=false){
+		$value = parent::get_value();
+		if($value ==""){
+			$value=NULL;
+		}
+		return $value;
 	}
 }
 
