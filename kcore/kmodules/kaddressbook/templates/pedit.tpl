@@ -1,6 +1,29 @@
 {include file="index.tpl"}
-<h2>{ki const="addper"}Add Person{/ki}</h2>
-<form action="manager.php?kmmodule=kaddressbook&amp;action=padd" method="post">
+<h2>{ki const="title"}Person Edit{/ki}</h2>
+{foreach from=$mess->ok item="message"}
+{if $message == 1}
+<div class="mpms_mess_ok">{ki const="person_changed"}Person contact changed.{/ki}</div>
+{/if}
+{/foreach}
+{foreach from=$mess->err item="message"}
+<div class="mpms_mess_err">
+{if $message == 2}
+{ki const="person_notchanged"}Person contact could not be changed. Internal server error.{/ki}
+{elseif $message == 5}
+{ki const="person_nopermison"}You do not have permissions to change person contact.{/ki}
+{elseif $message == 10}
+{ki const="person_email_exists"}You already have person with this email.{/ki}
+{elseif $message == 11}
+{ki const="person_mobile_exists"}You already have person with this mobile phone.{/ki}
+{elseif $message == 12}
+{ki const="person_nick_exists"}You already have person with this nickname.{/ki}
+{/if}
+</div>
+{/foreach}
+<form action="{$edit_person_f->action}" method="post">
+{if $dprivate==false}
+{kinput name=$private label="{ki const="private"}Private{/ki}" type="hidden"}
+{/if}
 <fieldset>
 <legend>{ki const="general"}General{/ki}</legend>
 <table>
@@ -35,9 +58,12 @@
 <table>
 <tr><td>{ktextarea name=$notess label="{ki const="notes"}Notes{/ki}" cols="70" rows="5"}</td></tr>
 <tr><td>{kinput name=$web label="{ki const="web"}Web{/ki}" type="text" value="http://"}</td></tr>
+{if $dprivate==true}
 <tr><td>{kinput name=$private label="{ki const="private"}Private{/ki}" type="checkbox"}</td></tr>
+{/if}
 </table>
-{kinput name=$save type="submit" label="{ki const="save"}Save{/ki}"}
 </fieldset>
+{kinput name=$save type="submit" label="{ki const="save"}Save{/ki}"}
+<input name="back" type="button" value="{ki const="back"}Back{/ki}" onclick="return go2URL('manager.php?kmmodule=kaddressbook&amp;action=psearch&amp;p={$pindex}')" />
 </form>
 {include file="index_end.tpl"}

@@ -31,6 +31,8 @@ class kmmodule_conf{
 	const ddate="d.m.Y";
 	/**default skin*/
 	const dskin="default";
+	/**maximum query limit - maximum rows returned*/
+	const dqlimit = 250;
 }
 /**module directory*/
 define("kmodules_dir",kconf::install_root_dir."/kmodules");

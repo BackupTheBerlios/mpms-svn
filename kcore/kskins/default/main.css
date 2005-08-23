@@ -1,11 +1,12 @@
 /*default - style sheets for mpms*/
-/*body class*/
+/*body class - main body tag*/
 body.mpms_body{
 	margin:0px;
 	padding: 0px;
 	font-family: Arial, sans-serif;
 	background-color:white ;
 }
+/*header div*/
 #mpms_header{
 	background-color: blue;
 	padding:0px;
@@ -13,6 +14,7 @@ body.mpms_body{
 	width: 100%;
 	min-height: 60px;
 }
+/*logo div which is inside header div*/
 #mpms_logo{
 	font-size: 50pt;
 	margin: 0px;
@@ -21,33 +23,41 @@ body.mpms_body{
 	color: white;
 	padding: 0px;
 }
+/*header message div - inside header div*/
 #mpms_hmess{
 	width: 100%;
 	padding-top: 0px;
 	text-align: right;
 	color: white;
 }
+/*link in message div*/
 #mpms_hmess a{
 	color: white;
 }
+/*main menu div- contains modules*/
 #mpms_menu{
 	clear: both;
 	text-align: center;
 }
+/*main menu link*/
 #mpms_menu a{
 	color: blue;
 	text-decoration: none;
 }
+/*main menu link hover*/
 #mpms_menu a:hover{
 	color: red;
 	text-decoration: none;
 }
+/*first main menu item div*/
 div.modules_first{
 	display: inline;
 }
+/*other main manu item div*/
 div.modules{
 	display: inline;
 }
+/*main footer div*/
 #mpms_footer{
 	background-color: blue;
 	width: 100%;
@@ -57,20 +67,24 @@ div.modules{
 	margin: 0px;
 	padding: 0px;
 }
+/*paragraf in footer div*/
 #mpms_footer p{
 	margin: 0px;
 	padding: 0px;
 
 }
+/*this is module div - hold everithing that module displays - like page many CMS*/
 #mpms_module{
 	min-height: 400px;
 }
+/*welcome message paragrapf in module div*/
 #mpms_module p.welcome_msg{
 	color: blue;
 	font-size: 16pt;
 	margin: 0px;
 	padding: 20px;
 }
+/*module menu div*/
 #mpms_module_menu{
 	background-color: #9FB7DF;
 	width:150px;
@@ -78,22 +92,82 @@ div.modules{
 	min-height: 400px;
 	float: left;
 }
-div.mpms_menu_head{
+/*modlue menu category*/
+#mpms_module_menu div.mpms_menu_head{
 	color: white;
 	text-decoration: underline;
 	font-weight: bold;
 	font-size: 14pt;
 }
-a.mpms_menu_link{
+/*module menu item*/
+#mpms_modlue_menu div.mpms_menu_item{
+	color: white;
+	font-size:12pt;
+} 
+/*modlue menu link*/
+#mpms_module_menu a{
 	color: white;
 	text-decoration: none;
 	font-weight: bold;
 	font-size: 12pt;
 }
-a.mpms_menu_link : hover{
+/*module menu link hover*/
+#mpms_module_menu a:hover{
 	color: blue;
 }
+/*module body div - holds module context*/
 #mpms_module_body{
 	padding-left: 180px;
 	padding-top: 20px;
+	padding-right: 10px;
+	padding-bottom: 15px;
+}
+/*general module fieldset*/
+#mpms_module_body fieldset{
+	background-color: #A3A5B4;
+}
+/*general module fieldset legend*/
+#mpms_module_body legend{
+	color:#48474C;
+	letter-spacing:5px;
+	font-weight:bold;
+}
+/*general module input*/
+#mpms_module_body input{
+	border:1px solid black;
+}
+/*general module select*/
+#mpms_module_body select{
+	border: 1px solid black;
+}
+/*general module ok message*/
+#mpms_module_body div.mpms_mess_ok{
+	color:green;
+}
+/*general module error message*/
+#mpms_module_body div.mpms_mess_err{
+	color:red;
+}
+/*used when displaing data in sections - this is for section header or title*/
+#mpms_module_body div.dsection_head{
+	font-weight:bold;
+}
+/*used when displaing data in sections*/
+#mpms_module_body div.dsection{
+	border:1px solid black;
+}
+/*used when displaing data in sections*/
+#mpms_module_body a.dsection_more{
+	font-size:8pt;
+	text-decoration:none;
+}
+/*general module table data field name*/
+#mpms_module_body td.field{
+	font-size:10pt;
+	font-weight:bold;
+	text-align:right;
+}
+/*general module table data field value*/
+#mpms_module_body td.fvalue{
+	font-size:10pt;
 }

@@ -1,15 +1,13 @@
 {include file="index.tpl"}
-<div>
 {if $mess==1}
 <div class="mpms_mess_ok">{$del_person|string_format:"{ki const="pdeleted"}Person %s has been deleted.{/ki}"}</div>
 {/if}
 {if $mess==2}
 <div class="mpms_mess_err">{$del_person|string_format:"{ki const="cnotdeleted"}Error. Company %s could not be deleted. Probablly you are not owner of contact.{/ki}"}</div>
 {/if}
-</div>
 <form action="{$search_form->action}" method="post">
 <fieldset class="mpms_fieldset">
-<legend>{ki const="search"}Company Details Search{/ki}</legend>
+<legend>{ki const="search"}Person Details Search{/ki}</legend>
 <table><tr><td><select name="{$field->name}">
 {koption name=$field context="-{ki const="all_fields"}All Fields{/ki}-" value="1"}
 {koption name=$field context="{ki const="first"}First Name{/ki}" value="first"}
@@ -30,7 +28,6 @@
 {kinput name=$search type="submit" label="{ki const="srez"}Show Results{/ki}"}
 </fieldset>
 </form>
-</div>
 {if $finded_no == 0}
 <div><p>{ki const="not_finded"}No data found!{/ki}</p></div>
 {elseif $finded_no >0}
@@ -47,7 +44,7 @@ function isok2del(name){
 <table>
 <tr><th>{ki const="firsth"}First{/ki}</th><th>{ki const="lasth"}Last{/ki}</th><th>{ki const="nickh"}Nick{/ki}</th><th>{ki const="mobileh"}Mobile{/ki}</th><th>{ki const="emailh"}Email{/ki}</th><th>{ki const="cpriv"}Private{/ki}</th><th>{ki const="companyh"}Company{/ki}</th></tr>
 {section loop=$finded name="cur"}
-<tr><td>{$finded[cur].first}</td><td>{$finded[cur].last}</td><td>{$finded[cur].nickname}</td><td>{$finded[cur].mobile}</td><td>{$finded[cur].Email}</td><td>{$finded[cur].private}</td><td>{$finded[cur].name}</td><td><a href="?kmmodule=kaddressbook&action=pedit&p={$finded[cur].pindex}">{ki const="pedit"}Edit{/ki}</a></td><td><a href="?kmmodule=kaddressbook&action=pdel&p={$finded[cur].pindex}" onclick="return isok2del('{$finded[cur].first} {$finded[cur].first}')">{ki const="cdel"}Delete{/ki}</a></td></tr>
+<tr><td>{$finded[cur].first}</td><td>{$finded[cur].last}</td><td>{$finded[cur].nickname}</td><td>{$finded[cur].mobile}</td><td>{$finded[cur].email}</td><td>{$finded[cur].private}</td><td><a href="?kmmodule=kaddressbook&amp;action=cview&amp;c={$finded[cur].cindex}">{$finded[cur].cname}</a></td><td><a href="?kmmodule=kaddressbook&amp;action=pview&amp;p={$finded[cur].pindex}">{ki const="pview"}View{/ki}</a></td><td><a href="?kmmodule=kaddressbook&amp;action=pedit&amp;p={$finded[cur].pindex}">{ki const="pedit"}Edit{/ki}</a></td><td><a href="?kmmodule=kaddressbook&amp;action=pdel&amp;p={$finded[cur].pindex}" onclick="return isok2del('{$finded[cur].first} {$finded[cur].last}')">{ki const="cdel"}Delete{/ki}</a></td></tr>
 {/section}
 </table>
 </div>

@@ -1,12 +1,10 @@
 {include file="index.tpl"}
-<div>
 {if $mess==1}
 <div class="mpms_mess_ok">{$del_comp|string_format:"{ki const="cdeleted"}Company %s has been deleted.{/ki}"}</div>
 {/if}
 {if $mess==2}
 <div class="mpms_mess_err">{$del_comp|string_format:"{ki const="cnotdeleted"}Error. Company %s could not be deleted. Probablly you are not owner of contact.{/ki}"}</div>
 {/if}
-</div>
 <form action="{$search_form->action}" method="post">
 <fieldset class="mpms_fieldset">
 <legend>{ki const="search"}Company Details Search{/ki}</legend>
@@ -30,7 +28,6 @@
 {kinput name=$search type="submit" label="{ki const="srez"}Show Results{/ki}"}
 </fieldset>
 </form>
-</div>
 {if $finded_no == 0}
 <div><p>{ki const="not_finded"}No data found!{/ki}</p></div>
 {elseif $finded_no >0}
@@ -47,7 +44,7 @@ function isok2del(name){
 <table>
 <tr><th>{ki const="cname"}Name{/ki}</th><th>{ki const="caddress"}Address{/ki}</th><th>{ki const="ccity"}City{/ki}</th><th>{ki const="ccountry"}Country{/ki}</th><th>{ki const="cvat"}VAT no.{/ki}</th><th>{ki const="cpriv"}Private{/ki}</th></tr>
 {section loop=$finded name="cur"}
-<tr><td>{$finded[cur].name}</td><td>{$finded[cur].address}</td><td>{$finded[cur].city}</td><td>{$finded[cur].country}</td><td>{$finded[cur].vat_no}</td><td>{$finded[cur].private}</td><td><a href="?kmmodule=kaddressbook&action=cedit&c={$finded[cur].cindex}">{ki const="cedit"}Edit{/ki}</a></td><td><a href="?kmmodule=kaddressbook&action=cdel&c={$finded[cur].cindex}" onclick="return isok2del('{$finded[cur].name}')">{ki const="cdel"}Delete{/ki}</a></td></tr>
+<tr><td>{$finded[cur].name}</td><td>{$finded[cur].address}</td><td>{$finded[cur].city}</td><td>{$finded[cur].country}</td><td>{$finded[cur].vat_no}</td><td>{$finded[cur].private}</td><td><a href="?kmmodule=kaddressbook&amp;action=cview&amp;c={$finded[cur].cindex}">{ki const="cview"}View{/ki}</a></td><td><a href="?kmmodule=kaddressbook&amp;action=cedit&amp;c={$finded[cur].cindex}">{ki const="cedit"}Edit{/ki}</a></td><td><a href="?kmmodule=kaddressbook&amp;action=cdel&amp;c={$finded[cur].cindex}" onclick="return isok2del('{$finded[cur].name}')">{ki const="cdel"}Delete{/ki}</a></td></tr>
 {/section}
 </table>
 </div>

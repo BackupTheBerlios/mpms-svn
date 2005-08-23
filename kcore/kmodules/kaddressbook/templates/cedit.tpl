@@ -1,6 +1,5 @@
 {include file="index.tpl"}
 <h2>{ki const="editcomp"}Edit Company{/ki}</h2>
-<div>
 {foreach from=$mess->ok item="message"}
 {if $message == 1}
 <div class="mpms_mess_ok">{ki const="comp_added"}Company contact changed.{/ki}</div>
@@ -14,7 +13,6 @@
 <div class="mpms_mess_err">{ki const="comp_nopermison"}You do not have permissions to change company contact..{/ki}</div>
 {/if}
 {/foreach}
-</div>
 {if $status == 1}
 <div class="mpms_mess_err">{ki const="nopermision"}You do not have permissions to change this company contact.{/ki}</div>
 {else}
@@ -40,6 +38,6 @@
 <hr />
 {kinput name=$edit_company label="{ki const="edit_company"}Save Changes{/ki}" type="submit"}
 </fieldset>
-</formi>
+</form>
 {/if}
 {include file="index_end.tpl"}
