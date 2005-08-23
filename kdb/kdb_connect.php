@@ -34,8 +34,6 @@ class kdb_con_err extends Exception{
 	}
 }
 
-if(defined("POSTGRES")){
-
 /**
 *connection class
 *
@@ -70,5 +68,4 @@ class kdb_connect{
 	}
 }
 
-}//end of POSTGRES
 ?>

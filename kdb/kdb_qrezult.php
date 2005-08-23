@@ -25,15 +25,13 @@ Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 *@package kdb
 */
 
-if(defined("POSTGRES")){
-
 /**
 *result class
 */
 class kdb_qresult{
-	public $res;	
+	public $res;
 	function __construct(&$pg_result){
-		$this->res =& $pg_result;
+		$this->res=&$pg_result;
 	}
 	/**
 	*this function returns next row from query result resource
@@ -56,7 +54,7 @@ class kdb_qresult{
 	/**
 	*returns number of affected rows. Used for INSERT, UPDATE, and DELETE queries.
 	*/
-	function affected_rows(){	
+	function affected_rows(){
 		return pg_affected_rows($this->res);
 	}
 	/**
@@ -66,7 +64,32 @@ class kdb_qresult{
 		pg_result_seek($this->res, 0);
 	}
 }
+/**result conteiner class
+* name comes from "kdb multiresult"
+* Purpose of this class is return valid result or throw exception. 
+* This class is returned from kdb_query::send_query_params().*/
+class kdb_mresult{
+	private $results;
+	/**just initaliztion*/
+	function __construct(){
+		$this->results=array();
+	}
+	/**this function is used to push pg result resource into this container.
+	* This member is only inportant to you if you are extending kdb_query
+	* features.*/
+	function push(&$resource){
+		$this->results[]=&$resource;
+	}
+	/**This function will give you valid kdb_qresult class or throw exception.
+	* So please use it inside try-cathc block.
+	* Result will be deleted from container so you could not use this function
+	* to get same result twice.*/
+	function &pop(){
+		$rez =& array_pop($this->results);
+		kdb_query::check_result(&$rez);
+		return new kdb_qresult(&$res);
+	}
+}
 
-}//end of POSTGRESS
 
 ?>
