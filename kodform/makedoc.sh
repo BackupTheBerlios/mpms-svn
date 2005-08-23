@@ -27,14 +27,14 @@
 #  * 
 #  * @var               string TITLE
 #  */
-TITLE="kodform html forms made easy"
+TITLE="Your Project Documentation"
 
 #/** 
 #  * name to use for the default package. If not specified, uses 'default'
 #  *
 #  * @var               string PACKAGES
 #  */
-PACKAGES="kodform"
+PACKAGES="yourProject"
 
 #/** 
 #  * name of a directory(s) to parse directory1,directory2
@@ -42,14 +42,14 @@ PACKAGES="kodform"
 #  *
 #  * @var               string PATH_PROJECT
 #  */
-PATH_PROJECT=$PWD,$PWD/plugins/tutorials
+PATH_PROJECT=$PWD
 
 #/**
 #  * path of PHPDoc executable
 #  *
 #  * @var               string PATH_PHPDOC
 #  */
-PATH_PHPDOC=~/bin/phpdoc
+PATH_PHPDOC=~/bin/phpdoc2
 
 #/**
 #  * where documentation will be put

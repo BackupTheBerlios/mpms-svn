@@ -22,8 +22,8 @@ Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 *
 *File: kodform.php
 *
-*This libary purpose is to create logic and presentation od HTML forms. It use smarty for 
-*presentation and classes defied in this file for form logic. There is also plugin directori for
+*This libary purpose is to create logic for HTML forms. I use smarty for 
+*presentation and classes defied in this file for form logic. There is also plugin directory for
 *smarty plugins which makes presentation in smarty easy and totaly independent.
 *
 *Currently all forms are handeled by POST request. They will not work with GET. If needed it
@@ -116,6 +116,8 @@ class kform{
 			$input->value=null;
 		}
 	}
+	/**to submit form in code not by user
+	* @param string $sname name of ksubmit*/
 	function submit($sname){
 		$_POST[$sname]=1;	
 	}
@@ -183,11 +185,12 @@ class kinput extends kform_object{
 	*@param smarty $smarty object ro wich this component will be assigned by ref
 	*@param kvalidator $validator object which implements new object validation if not set
 	*is set to be kvalidator object*/
-	function __construct($name, &$smarty, &$validator = null){	
+	function __construct($name, &$smarty, &$validator = null, $value=null){	
 		$this->validator=&$validator;
 		if($validator==null)
 			$this->validator=&new kvalidator();
 		$this->name=$name;
+		$this->value=$value;
 		//$this->process();
 		$smarty->assign_by_ref($this->name, $this);
 	}
@@ -250,8 +253,9 @@ class kddlist extends kform_object{
 	/**creates kddlist object
 	*
 	*@param string $name name of drop down list*/
-	function __construct($name, &$smarty){
+	function __construct($name, &$smarty, $value=null){
 		$this->name=$name;
+		$this->value=$value;
 		$smarty->assign_by_ref($this->name, $this);
 		//$this->process();
 	}
@@ -285,9 +289,9 @@ class kddlist extends kform_object{
 
 /**implements check box*/
 class kcheckbox extends kform_object{
-	/**name of select*/
+	/**name of check box*/
 	public $name;
-	/**value of select set by user*/
+	/**value of checkbox set by user*/
 	public $value=null;
 	/**is checked*/
 	public $checked;
