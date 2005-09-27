@@ -74,7 +74,7 @@ class kform{
 	*submitted button function "submited" which can than process this from because all inputs
 	*of this button are passed to that function.
 	*
-	*@return boolean true if form is submited and valid else false*/
+	*@return mixed usualy status (int) if form is submited and valid else false*/
 	function submited(){
 		foreach($this->submits as $name => $value){
 			if(isset($_POST[$name])){
