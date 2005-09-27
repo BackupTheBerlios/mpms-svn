@@ -106,7 +106,7 @@ function klang_trigger_error($error_msg, $error_type=E_USER_WARNING){
 }
 /**this is function which implements printf PHP function
 * I tought that smarty by default has that but could not find it
-* is exist use default smartys function.
+* if exist use default smartys function.
 * It can take maksimum of 10 arguments and format string*/
 function klang_printf($params, &$samrty){
 	if(isset($params['format'])){

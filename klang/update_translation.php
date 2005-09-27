@@ -17,11 +17,9 @@ class update_options extends getopt{
 	}
 	function usage($error){
 		parent::usage($error);
-		usage();
+		$this->usage_help();
 	}
-}
-
-function usage(){
+	function usage_help(){
 		print "
 Usage:
 	php update_translation.php -l translation_file -t template_file [options]
@@ -33,6 +31,7 @@ Options:
 	-l	full path to translations file		
 	-t	full path to smarty template file
 ";
+	}
 }
 
 function kerror($mess){
