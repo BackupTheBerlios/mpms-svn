@@ -33,10 +33,16 @@ class kuser_prefs{
 	public $time;
 	public $date;
 	public $skin;
+	public $tzone;
 	//array of possible values
 	private $plang = array("en","hr");
 	private $pskin = array("default", "blue");
 	function __construct(){
+		$this->lang=kmmodule_conf::dlang;
+		$this->time=kmmodule_conf::dtime;
+		$this->date=kmmodule_conf::ddate;
+		$this->skin=kmmodule_conf::dskin;
+		$this->tzone=kmmodule_conf::dtzone;
 		global $kmmlog;
 		global $auth;
 		$rez =null;
@@ -50,16 +56,16 @@ class kuser_prefs{
 		}
 		$row = $rez->next();
 		if($row['user_index']!=NULL){
-			$this->lang=$row['lang'];
-			$this->time=$row['time'];
-			$this->date=$row['date'];
-			$this->skin=$row['skin'];
-		}
-		else{
-			$this->lang=kmmodule_conf::dlang;
-			$this->time=kmmodule_conf::dtime;
-			$this->date=kmmodule_conf::ddate;
-			$this->skin=kmmodule_conf::dskin;	
+			if($row['lang']!=NULL)
+				$this->lang=$row['lang'];
+			if($row['time']!=NULL)
+				$this->time=$row['time'];
+			if($row['date']!=NULL)
+				$this->date=$row['date'];
+			if($row['skin']!=NULL)
+				$this->skin=$row['skin'];
+			if($row['zone']!=NULL)
+				$this->tzone=$row['zone'];
 		}
 	}
 }
@@ -91,7 +97,7 @@ class kmmanager{
 	function display(){	
 		global $__kmmodules;
 		global $auth;
-		if($_GET['action']=="logout"){
+		if(isset($_GET['action']) && $_GET['action']=="logout"){
 			$auth->logout("manager.php");
 			return;
 		}

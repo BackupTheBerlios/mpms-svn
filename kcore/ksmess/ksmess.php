@@ -33,7 +33,7 @@ abstract class ks_handler{
 }
 
 /**memory handler
-* the simplest handler. It is not good for large memoris torage because it reads whole data at once*/
+* the simplest handler. It is not good for large memoris storage because it reads whole data at once*/
 class ksh_memory extends ks_handler{
 	protected $data;
 	protected $end;

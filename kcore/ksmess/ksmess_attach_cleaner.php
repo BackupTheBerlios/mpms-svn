@@ -2,13 +2,11 @@
 
 require_once 'ksmess_conf.php';
 require_once 'kconf/kconf.php';
-print "Tu sam";
+
 $connection =& get_kdb_connection();
 $to_delete=$connection->execute("SELECT path FROM ksmess.attachement WHERE message_index IS NULL");
 while(($mess = $to_delete->next())){
-	print "Pero";
 	if(unlink($mess["path"]) || (!file_exists($mess["path"]))){
-		print "Sime";
 		try{
 			$connection->execute("DELETE FROM ksmess.attachement WHERE path = '".$mess["path"]."' and message_index IS NULL");
 		}

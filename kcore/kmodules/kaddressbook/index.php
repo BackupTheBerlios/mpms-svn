@@ -21,14 +21,14 @@
 //require_once kconf::kodform_dir."/kodform.php";
 
 //check authorization
-if(!isset($auth)){
+/*if(!isset($auth)){
 	$kmmlog->debug("auth variable is not set. Exiting.");
 	exit(0);
 }
 if(!$auth->check()){
 	$kmmlog->err("Authentification error. Exiting.");
 	exit(1);
-}
+}*/
 
 /**general submit class for kaddressbook submits
 *
@@ -340,7 +340,7 @@ class kaddressbook{
 	/**all necesary initalization for this object*/
 	function __construct(){
 		global $prefs;//using global preferances
-		$this->smarty =& new kmSmarty($prefs->lang);
+		$this->smarty =& new kmSmarty($prefs->lang, "kaddressbook");
 		$this->kablog =& Log::singleton("error_log", PEAR_LOG_TYPE_SYSTEM, "kaddressbook");
 		$this->sql_query =& get_kdb_connection();
 		$this->mcoll =& new mcollect();

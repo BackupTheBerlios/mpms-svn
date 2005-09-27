@@ -31,6 +31,8 @@ class kmmodule_conf{
 	const ddate="d.m.Y";
 	/**default skin*/
 	const dskin="default";
+	/**defult timezone - in seconds from G*/
+	const dtzone=7200;
 	/**maximum query limit - maximum rows returned*/
 	const dqlimit = 250;
 }
@@ -43,12 +45,13 @@ $__kmmodules = array("kworktime"=> "WorkingTime", "kaddressbook" => "AddressBook
 
 /**class used in as modules smarty. It only sets default smarty directories*/
 class kmSmarty extends klangSmarty{
-	function __construct($lang, $debug=false){
+	function __construct($lang, $module, $debug=false){
 		parent::__construct($lang, $debug);
-		$this->template_dir=kmodules_dir."/".$_GET['kmmodule'].'/templates/';
-	        $this->compile_dir=kmodules_dir."/".$_GET['kmmodule'].'/templates_c/';
-		$this->config_dir=kmodules_dir."/".$_GET['kmmodule'].'/configs/';
-		$this->cache_dir=kmodules_dir."/".$_GET['kmmodule'].'/cache/';
+		$this->template_dir=kmodules_dir."/".$module."/templates/";
+	        $this->compile_dir=kmodules_dir."/".$module."/templates_c/";
+		$this->config_dir=kmodules_dir."/".$module."/configs/";
+		$this->cache_dir=kmodules_dir."/".$module."/cache/";
+		//$this->debugging=true;
 		array_push($this->plugins_dir, kconf::kodform_plugin_dir);
 	}
 }
