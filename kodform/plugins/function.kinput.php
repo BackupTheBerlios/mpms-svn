@@ -38,6 +38,7 @@ Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 *@param string $param['stylel'] style for label
 *@param string $param['class'] class for input
 *@param string $param['style'] style for input
+*@param string $param['disabled'] set if button is disabled
 *@return string returns generated HTML input element
 */
 function smarty_function_kinput($param, &$smarty){
@@ -46,15 +47,27 @@ function smarty_function_kinput($param, &$smarty){
 	if($param['type']=="text" || $param['type']=="password"){
 		if($param['type']=="text"){
 			$value =$field->get_value();
-			if($value == null && isset($param['default']))
-				$value = $param['default'];
+			if($value == null){
+				if(isset($param['default']))
+					$value = $param['default'];
+				else{
+					$value = $field->default;
+				}
+			}
 		}
 		if(isset($param['label']))
 			$string.="<label for=\"".$field->name."\" class=\"".$param['classl']."\" style=\"".$param['stylel']."\">".$param['label'].":</label>";
-		$string.="<input type=\"".$param['type']."\" id=\"".$field->name."\" name=\"".$field->name."\" value=\"".$value."\" class=\"".$param['class']."\" style=\"".$param['style']."\" />";
+		$string.="<input type=\"".$param['type']."\" id=\"".$field->name."\" name=\"".$field->name."\" value=\"".$value."\" class=\"".$param['class']."\" style=\"".$param['style']."\"";
+		if(isset($param['disabled']))
+			$string.=" disabled=\"disabled\"";
+		$string.=" />";
 	}
-	else if($param['type']=="submit")
-		$string.="<input type=\"".$param['type']."\" id=\"".$field->name."\" name=\"".$field->name."\" value=\"".$param['label']."\" class=\"".$param['class']."\" style=\"".$param['style']."\" />";
+	else if($param['type']=="submit"){
+		$string.="<input type=\"".$param['type']."\" id=\"".$field->name."\" name=\"".$field->name."\" value=\"".$param['label']."\" class=\"".$param['class']."\" style=\"".$param['style']."\"";
+		if(isset($param['disabled']))
+			$string.=" disabled=\"disabled\"";
+		$string.=" />";
+	}
 	else if($param['type']=="hidden")
 		$string.="<input type=\"".$param['type']."\" id=\"".$field->name."\" name=\"".$field->name."\" value=\"".$field->get_value()."\" />";
 	else if($param['type']=="checkbox"){
@@ -63,6 +76,8 @@ function smarty_function_kinput($param, &$smarty){
 		$string.="<input type=\"".$param['type']."\" id=\"".$field->name."\" name=\"".$field->name."\" value=\"".$field->get_value()."\"";
 		if($field->checked)
 			$string.=" checked=\"checked\"";
+		if(isset($param['disabled']))
+			$string.=" disabled=\"disabled\"";
 		$string.=" />";
 	}
 	return $string;

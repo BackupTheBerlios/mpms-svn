@@ -76,9 +76,9 @@ class kform{
 	*
 	*@return mixed usualy status (int) if form is submited and valid else false*/
 	function submited(){
-		foreach($this->submits as $name => $value){
+		foreach($this->submits as $name => &$value){
 			if(isset($_POST[$name])){
-				foreach($this->inputs as $input)
+				foreach($this->inputs as &$input)
 					$input->process();
 				if($this->is_valid())
 					return $value->submited(&$this->inputs);
@@ -88,22 +88,26 @@ class kform{
 	}
 	/**add new input control
 	*
-	*@param kinput $input new input control to be passed*/
-	function add_input(kform_object &$input){
+	*@param kinput $input new input control to be passed
+	*@return kinput which was added*/
+	function &add_input(kform_object &$input){
 		$this->inputs[$input->name] =& $input;
+		return $input;
 	}
 
 	/**add new submitt control
 	*
-	*@param ksubmit $submit adds submit button*/
-	function add_submit(ksubmit &$submit){
+	*@param ksubmit $submit adds submit button
+	*@return ksubmit which was added*/
+	function &add_submit(ksubmit &$submit){
 		$this->submits[$submit->name] =& $submit;
+		return $submit;
 	}
 	/**check is all input components of this form have valid values
 	*
 	*@return boolean if all are valid returns true else false*/
  	function is_valid(){
-		foreach($this->inputs as $input){
+		foreach($this->inputs as &$input){
 			if(!$input->is_valid())
 				return false;
 		}
@@ -112,14 +116,14 @@ class kform{
 	/**resets form inputs.
 	* It set all form input values to null. Useful when from is processed and new input is expected.*/
 	function freset(){
-		foreach($this->inputs as $input){
+		foreach($this->inputs as &$input){
 			$input->value=null;
 		}
 	}
 	/**to submit form in code not by user
 	* @param string $sname name of ksubmit*/
-	function submit($sname){
-		$_POST[$sname]=1;	
+	function submit(&$submit){
+		$_POST[$submit->name]=1;	
 	}
 }
 
@@ -165,6 +169,20 @@ class kv_regex extends kv_min_max{
 		return false;	
 	}
 }
+
+/**date validator
+* useful for chacking if date is valid
+* only for Georgian calendar as this use checkdate() php function*/
+class kv_date extends kvalidator{
+	function is_valid($value){
+		if(($times=strtotime($value))!==false){
+			$time = explode("-",date("m-j-Y",$times));
+			return checkdate($time[0],$time[1],$time[2]);
+		}
+		return false;
+	}
+}
+
 abstract class kform_object{
 	abstract public function process();
 	abstract public function is_valid();
@@ -180,6 +198,8 @@ class kinput extends kform_object{
 	public $value = null;
 	/**validator of input*/
 	protected $validator;
+	/**default value*/
+	public $default;
 	/**creates new kinput object
 	*@param string $name neame of kinput component same as input tag name attribute
 	*@param smarty $smarty object ro wich this component will be assigned by ref
@@ -190,7 +210,7 @@ class kinput extends kform_object{
 		if($validator==null)
 			$this->validator=&new kvalidator();
 		$this->name=$name;
-		$this->value=$value;
+		$this->default=$value;
 		//$this->process();
 		$smarty->assign_by_ref($this->name, $this);
 	}
