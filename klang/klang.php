@@ -117,6 +117,19 @@ function klang_printf($params, &$samrty){
 		return call_user_func_array("sprintf", &$pf);
 	}
 }
+/**this is helper function with wich you can create arrays in templates
+* very usefull when you need to create array with translatable variables*/
+function klang_array( $params, $content, &$smarty, &$repeat){
+	if(isset($params['name']) && isset($params['key'])){
+		$karray =& $smarty->get_template_vars($params['name']);
+		if($karray===null){
+			$smarty->assign($params['name'], array($params['key']=> $content));
+		}
+		else{
+			$karray[$params['key']]=$content;			
+		}
+	}
+}
 
 /**this class extends Smarty class to add translation support*/
 class klangSmarty extends Smarty {
@@ -134,6 +147,7 @@ class klangSmarty extends Smarty {
 		$this->klang_debug = $debug;
 		$this->register_prefilter("klang_smarty_prefilter");
 		$this->register_function("kprintf", "klang_printf");
+		$this->register_block("karray", "klang_array");
 	}
 	/**this is just overiden method of parent (Smarty)
 	* it has same function, only addition is initalization of translations array*/
