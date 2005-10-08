@@ -28,7 +28,7 @@ class kmmodule_conf{
 	/**defualt time fromat*/
 	const dtime="H:i:s";
 	/**default date format*/
-	const ddate="d.m.Y";
+	const ddate="d.m.Y.";
 	/**default skin*/
 	const dskin="default";
 	/**defult timezone - in seconds from G*/

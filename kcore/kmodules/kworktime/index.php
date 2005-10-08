@@ -60,6 +60,17 @@ abstract class kwtsubmit extends ksubmit{
 	}
 }
 
+/**submit that select day for day report*/
+class kwtdr_submit extends ksubmit{
+	function __construct($name, kmSmarty &$smarty){
+		parent::__construct($name, &$smarty);
+	}
+	function submited(&$inputs){
+		return true;
+	}
+}
+
+/**submit that handl user status changes*/
 class kwtstatus extends kwtsubmit{
 	private $upref;
 	private $auth;
@@ -85,6 +96,13 @@ class kwtstatus extends kwtsubmit{
 		return true;
 	}
 }
+
+//this bellow is not needed and it should be removed after testing day report functionality
+/*class dayr_subbmit extends kwtsubmit{
+	var data
+	function __construct($name, kmSmarty &$smarty, kdb_query &$query,mcollect &$mcoll, Log &$log, &$auth, &$upref, $status){
+		parent::__construct($name, &$smarty, &$query, &$mcoll, &$log);
+}*/
 
 class kworktime{
 	const working=1;//at work working
@@ -126,20 +144,37 @@ class kworktime{
 	/**chack is user alowed to access*/
 	private function auth_check(){
 		if(!$this->auth->check_group("kworktime")){
-			$this->kablog->info("User ".$this->auth->username." is not memeber of kworktime group so access is denied to him.");
+			$this->klog->info("User ".$this->auth->username." is not memeber of kworktime group so access is denied to him.");
 			$this->smarty->display("noaccess.tpl");	
 			return false;
 		}
 		return true;
 	}
 	private function process_request(){
-		if($_GET['action']=="wtimes")
-			$this->reports();
+		if($_GET['action']=="rday")
+			$this->day_report();
 		else
 			$this->set_times();
 	}
-	private function reports(){
-		print "Not implementd";
+	/**process day report*/
+	private function day_report(){
+		$form =& new kform("selday", $this->smarty);
+		$fi_date =& $form->add_input(new kinput("idate", $this->smarty, new kv_date(), date($this->uprefs->date)));
+		$sub_date =& $form->add_submit(new kwtdr_submit("dsel", $this->smarty));
+		if(isset($_GET['day'])){
+			$gdate = $_GET['day'];
+			if(is_int($_GET['day']))
+				$gdate = date($this->uprefs->date, $_GET['day']);
+			$fi_date->set_value($gdate);
+			$form->submit(&$sub_date);
+		}
+		if($form->submited()){
+			$details =& $this->day_details($this->auth->userindex, strtotime($fi_date->value));
+			$this->smarty->assign("ddate", $fi_date->value);
+			$this->smarty->assign_by_ref("ddetails", $details["details"]);
+			$this->smarty->assign_by_ref("dsumary", $details["sumary"]);
+		}
+		$this->smarty->display("dayreport.tpl");
 	}
 	/**get working status and respond with apropiate action*/
 	private function set_times(){
@@ -384,11 +419,80 @@ class kworktime{
 			}
 		}
 	}
+	private function &day_details($user, $day){
+		//get day info from db
+		$query="SELECT stype, note, stime, uzone FROM kworktime.times WHERE user_index=$1 AND stime>$2 AND stime<$3 ORDER BY stime;";
+		$rezult = false;
+		try{
+			$rezult=&$this->sql_query->query_params($query, array($user, date("c",$day), date("c", $day+86400)));
+		}
+		catch(Exception $e){
+			$this->klog->err($e->getMessage());
+		}
+		$details = array();
+		//prepare sumary array
+		//wtime - total working time
+		//ltime - total lunch time
+		//btime - total break time
+		//otime - total out time
+		$sumary=array("wtime"=>0,"ltime"=>0,"btime"=>0,"otime"=>0);
+		$cur = -1;
+		$last_time=$day;
+		while(($row=$rezult->next())){
+			$row['stime']=strtotime($row['stime']);
+			$row['total']=$row['stime']-$last_time;
+			$last_time=$row['stime'];
+			$details[]=$row;
+			switch($row['stype']){
+				case kworktime::lunch_end:
+				case kworktime::slunch_end:
+					$sumary['ltime']+=$row['total'];
+					$sumary['wtime']+=$row['total'];
+					break;
+				case kworktime::wbreak_end:
+				case kworktime::swbreak_end:
+					$sumary['btime']+=$row['total'];
+					$sumary['wtime']+=$row['total'];
+					break;
+				case kworktime::in:
+				case kworktime::sin:
+					$sumary['otime']+=$row['total'];
+					$sumary['wtime']+=$row['total'];
+					break;
+				case kworktime::snot_working:
+				case kworktime::lunch:
+				case kworktime::out:
+				case kworktime::wbreak:
+				case kworktime::not_working:
+					$sumary['wtime']+=$row['total'];
+					break;
+			}
+			$cur++;
+		}
+		switch($details[$cur]['stype']){
+			case kworktime::working:
+			case kworktime::lunch_end:
+			case kworktime::wbreak_end:
+			case kworktime::in:
+				$sumary['wtime']+=($day+86400-$details[$cur]['stime']);
+				break;
+			case kworktime::lunch:
+				$sumary['wtime']+=($day+86400-$details[$cur]['stime']);
+				$sumary['ltime']+=($day+86400-$details[$cur]['stime']);
+				break;
+			case kworktime::out:
+				$sumary['wtime']+=($day+86400-$details[$cur]['stime']);
+				$sumary['otime']+=($day+86400-$details[$cur]['stime']);
+				break;
+			case kworktime::wbreak:
+				$sumary['wtime']+=($day+86400-$details[$cur]['stime']);
+				$sumary['btime']+=($day+86400-$details[$cur]['stime']);
+				break;
+		}
+		return array("deatils"=>$details, "sumary"=>$sumary);
+	}
 }
 
-class kwt_reports{
-	
-}
 $main =&new kworktime($auth, $prefs);
 $main->display();
 ?>

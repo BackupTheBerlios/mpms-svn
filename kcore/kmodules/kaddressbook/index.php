@@ -657,7 +657,7 @@ class kaddressbook{
 				$kcvalue->value=$company[2];
 				$kcoper->value=$company[3];
 				$kcfield->value=$company[4];
-				$form->submit("search");
+				$form->submit(&$search_submit);
 			}
 			else{
 				$err_ok_mess=2;
@@ -771,7 +771,7 @@ class kaddressbook{
 			$kcvalue->value=$person[2];
 			$kcoper->value=$person[3];
 			$kcfield->value=$person[4];
-			$form->submit("search");
+			$form->submit(&$search_submit);
 		}
 		$this->smarty->assign("mess",$err_ok_mess);
 		if($form->submited()){
