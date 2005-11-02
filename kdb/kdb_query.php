@@ -52,7 +52,7 @@ class kdb_query{
 	* message. (see PHP postgres docs for more)
 	*@param string $query string containing SQL cuery
 	*@return kdb_result kdb_rezult object containg rezults*/
-	function &execute($query){
+	function execute($query){
 		$res =&pg_query($this->conn->get_conn(), $query);
 		if($res == false)
 			throw new kdb_query_err(pg_last_error($this->conn->get_conn()));
@@ -61,7 +61,7 @@ class kdb_query{
 	/**execute SQL query with given params
 	*
 	* it uses pg_query_params which is more prone to SQL injections*/
-	function &query_params($query, $params){
+	function query_params($query, $params){
 		//needed to execute only one query
 		$filter_query = split(";",$query);
 		$test = pg_send_query_params($this->conn->get_conn(),  $filter_query[0], $params);
