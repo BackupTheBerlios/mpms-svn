@@ -108,7 +108,7 @@ function klang_trigger_error($error_msg, $error_type=E_USER_WARNING){
 * I tought that smarty by default has that but could not find it
 * if exist use default smartys function.
 * It can take maksimum of 10 arguments and format string*/
-function klang_printf($params, &$samrty){
+function klang_printf($params, &$smarty){
 	if(isset($params['format'])){
 		$pf = array($params['format']);
 		for($i=0;$i<10;$i++)
@@ -131,6 +131,16 @@ function klang_array( $params, $content, &$smarty, &$repeat){
 	}
 }
 
+function klang_get_array_value($params, &$smarty){
+	if(isset($params['name']) && isset($params['key'])){
+		$karray =& $smarty->get_template_vars($params['name']);
+		if($karray !== null){
+			return $karray[$params['key']];
+		}
+	}
+	return;
+}
+
 /**this class extends Smarty class to add translation support*/
 class klangSmarty extends Smarty {
 	/**@var string holds laguage identifier*/
@@ -147,6 +157,7 @@ class klangSmarty extends Smarty {
 		$this->klang_debug = $debug;
 		$this->register_prefilter("klang_smarty_prefilter");
 		$this->register_function("kprintf", "klang_printf");
+		$this->register_function("kgetavalue", "klang_get_array_value");
 		$this->register_block("karray", "klang_array");
 	}
 	/**this is just overiden method of parent (Smarty)
