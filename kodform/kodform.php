@@ -152,6 +152,25 @@ class kv_min_max extends kvalidator{
 		return false;
 	}
 }
+/**min max numeric value validator
+*
+*Check if iunput contains integer value and that that value is within min and max. If yes return true else return false*/
+class kvint_min_max extends kvalidator{
+	private $min;
+	private $max;
+	function __construct($min, $max){
+		$this->min = $min;
+		$this->max = $max;
+	}
+	function is_valid($value){
+		if(is_numeric($value)){
+			$value = (int) $value;
+			if(($value>=$this->min && $value<=$this->max))
+				return true;
+		}
+		return false;
+	}
+}
 /**regex validator class
 *
 * you can use it to check field value against regex expression*/
@@ -246,6 +265,20 @@ class kinput extends kform_object{
 	function set_value($value){
 		$this->value=$value;
 		//$smarty->assign_by_ref($this->name, $this);
+	}
+	/**functio to be used in forms value attribute
+	* @param default value for input*/
+	function get_display_value($default=null){
+		$valid_value = $this->get_value();
+		if($valid_value==null){
+			if($this->default!=null)
+				return $this->default;
+			else if($default!=null)
+				return $default;
+			else
+				return "";
+		}
+		return $valid_value;
 	}
 }
 /**usefull class whan empty values have to have null value instead empty string
@@ -376,5 +409,11 @@ abstract class ksubmit{
 	}
 	/**function which implements action wich will be taken when this button will be clicked (from submitted)*/
 	abstract function submited(&$inputs);
+}
+/**just submit without functionality.*/
+class k_submit extends ksubmit{
+	function submited(&$inputs){
+		return true;
+	}
 }
 ?>
