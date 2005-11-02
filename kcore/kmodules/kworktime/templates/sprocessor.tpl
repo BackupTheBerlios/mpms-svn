@@ -1,7 +1,7 @@
 {if $status==1 || $status==4 || $status==8 || $status==6}
 {ki const="working"}working{/ki}
 {elseif $status==2}
-{ki const="notworking"}wot working{/ki}
+{ki const="notworking"}not working{/ki}
 {elseif $status==3}
 {ki const="lunch"}lunch{/ki}
 {elseif $status==5}

@@ -4,8 +4,9 @@
 <head>
 <title>MPMS - {$page_title}</title>
 <meta http-equiv="Content-Type" content="text/xhtml; charset=utf-8" />
-<link rel="stylesheet" type="text/css" href="{$skin_dir}/main.css" />
-<link rel="stylesheet" type="text/css" href="{$skin_dir}/calendar.css" />
+<link rel="stylesheet" type="text/css" href="{$skin_dir}/main.css" media="screen" />
+<link rel="stylesheet" type="text/css" href="{$skin_dir}/main_print.css" media="print" />
+<link rel="stylesheet" type="text/css" href="{$skin_dir}/calendar.css" media="screen" />
 <script type="text/javascript" language="javascript" src="{$skin_dir}/main.js"></script>
 <script type="text/javascript" language="javascript" src="{$skin_dir}/calendar.js"></script>
 <script type="text/javascript" language="javascript" src="{$skin_dir}/calendar-setup.js"></script>

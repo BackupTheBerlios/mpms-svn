@@ -31,5 +31,12 @@ function switchzone($time, $zonefrom, $zoneto){
 function stime2zone($zoneto){
 	return switchzone(time(),date("Z"),$zoneto);
 }
-
+/**convert second to hours:min:sec*/
+function &sec2hms($seconds){
+	$interval = array("hours" => sprintf("%02d", floor($seconds/3600)));
+	$hours_ostatak = $seconds%3600;
+	$interval["min"] = sprintf("%02d",floor($hours_ostatak/60));
+	$interval["sec"] = sprintf("%02d", $hours_ostatak%60);
+	return $interval;
+}
 ?>

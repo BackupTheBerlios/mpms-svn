@@ -26,7 +26,6 @@ require_once 'kmmanager_config.php';
 
 //authentification
 $auth =& new kauth();
-
 class kuser_prefs{	
 	//wariables which holds users values
 	public $lang;
@@ -38,6 +37,7 @@ class kuser_prefs{
 	private $plang = array("en","hr");
 	private $pskin = array("default", "blue");
 	function __construct(){
+		
 		$this->lang=kmmodule_conf::dlang;
 		$this->time=kmmodule_conf::dtime;
 		$this->date=kmmodule_conf::ddate;
@@ -67,6 +67,7 @@ class kuser_prefs{
 			if($row['zone']!=NULL)
 				$this->tzone=$row['zone'];
 		}
+		date_default_timezone_set($this->tzone);
 	}
 }
 
@@ -97,17 +98,20 @@ class kmmanager{
 	function display(){	
 		global $__kmmodules;
 		global $auth;
+		global $kmmlog;
 		if(isset($_GET['action']) && $_GET['action']=="logout"){
 			$auth->logout("manager.php");
 			return;
 		}
 		//set header
 		$smarty =&new klangSmarty($this->userp->lang);	
+		//$smarty =&new Smarty();	
 		$smarty->assign_by_ref("modules", &$__kmmodules);
 		//title
 		$smarty->assign("page_title", "main");
 		$smarty->assign("page_lang", $this->userp->lang);
 		$smarty->assign("skin_dir", $this->get_skin());
+		$kmmlog->debug("poceo 2 display");
 		$smarty->display("header.tpl");
 		$smarty->clear_all_assign();	
 		//load middle

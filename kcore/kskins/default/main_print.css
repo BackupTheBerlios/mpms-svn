@@ -1,0 +1,31 @@
+/*default print - style sheets for mpms*/
+/*body class - main body tag*/
+body.mpms_body{
+	margin:0px;
+	padding: 0px;
+	font-family: Arial, sans-serif;
+	background-color:white ;
+}
+/*header div*/
+#mpms_header{
+	display: none;
+}
+/*main menu div- contains modules*/
+#mpms_menu{
+	display: none;
+}
+/*main footer div*/
+#mpms_footer{
+	display: none;
+}
+/*module menu div*/
+#mpms_module_menu{
+	display: none;
+}
+/*general module fieldset*/
+#mpms_module_body fieldset{
+	display: none;
+}
+a{
+	display: none;
+}

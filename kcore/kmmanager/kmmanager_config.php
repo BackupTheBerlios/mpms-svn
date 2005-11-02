@@ -31,11 +31,13 @@ class kmmodule_conf{
 	const ddate="d.m.Y.";
 	/**default skin*/
 	const dskin="default";
-	/**defult timezone - in seconds from G*/
-	const dtzone=7200;
+	/**defult timezone - see PHP function date_default_timezone_set ex. Canada/Eastern*/
+	const dtzone="Europe/Zagreb";
 	/**maximum query limit - maximum rows returned*/
 	const dqlimit = 250;
 }
+/**system timezone*/
+define("stzone", date_default_timezone_get());
 /**module directory*/
 define("kmodules_dir",kconf::install_root_dir."/kmodules");
 /**skin directory*/

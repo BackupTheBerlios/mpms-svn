@@ -140,6 +140,10 @@ div.modules{
 #mpms_module_body select{
 	border: 1px solid black;
 }
+/*general mobule button*/
+#mpms_module_body button{
+	border: 1px solid black;
+}
 /*general module ok message*/
 #mpms_module_body div.mpms_mess_ok{
 	color:green;
@@ -147,6 +151,10 @@ div.modules{
 /*general module error message*/
 #mpms_module_body div.mpms_mess_err{
 	color:red;
+}
+/*general module error message*/
+#mpms_module_body div.mpms_mess_info{
+	color:#B5B1FF;
 }
 /*used when displaing data in sections - this is for section header or title*/
 #mpms_module_body div.dsection_head{
@@ -170,4 +178,23 @@ div.modules{
 /*general module table data field value*/
 #mpms_module_body td.fvalue{
 	font-size:10pt;
+}
+/*general module report title*/
+#mpms_module_body div.report_title{
+	font-size: 18pt;
+}
+/*general module report section*/
+#mpms_module_body div.report_section{
+	font-size: 16pt;
+} 
+/*general module report table header*/
+#mpms_module_body tr.report_thead{
+}
+/*general module report table row 0*/
+#mpms_module_body tr.report_row0{
+	background-color: #E6E6FA;
+}
+/*general module report table row 1*/
+#mpms_module_body tr.report_row1{
+	background-color: #E5E5E5;
 }

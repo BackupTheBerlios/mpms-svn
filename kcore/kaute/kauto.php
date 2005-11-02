@@ -191,7 +191,6 @@ class kauth{
 			$this->login();
 			$this->save_session();
 		}
-		//end of comment out for xhtml check
 
 	}
 	/** save session information

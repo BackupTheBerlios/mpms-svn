@@ -31,9 +31,9 @@ class settings extends kser{
 	public $data;
 	function __construct(){
 		parent::__construct("wtsettings");
-		$this->data= array(	"maxwtime"=>14*360,
-					"maxltime"=>40,
-					"maxbtime"=>20,
+		$this->data= array(	"maxwtime"=>14*3600,
+					"maxltime"=>40*60,
+					"maxbtime"=>15*60,
 					"daywhours"=>8*3600);
 	}
 }
@@ -82,10 +82,10 @@ class kwtstatus extends kwtsubmit{
 		$this->status=$status;
 	}
 	function submited(&$inputs){
-		$querys = "SELECT kworktime.new_status($1::int8, $2::int2, $3::varchar,now(), $4::interval);";
+		$querys = "SELECT kworktime.new_status($1::int8, $2::int2, $3::varchar,$4);";
 		$rezult = false;
 		try{
-			$rezult=&$this->query->query_params($querys, array($this->auth->userindex, $this->status, $inputs['notef']->get_db_value(), $this->upref->tzone));
+			$rezult=&$this->query->query_params($querys, array($this->auth->userindex, $this->status, $inputs['notef']->get_db_value(), date("c")));
 		}
 		catch(Exception $e){
 			$this->log->err($e->getMessage());
@@ -103,6 +103,21 @@ class kwtstatus extends kwtsubmit{
 	function __construct($name, kmSmarty &$smarty, kdb_query &$query,mcollect &$mcoll, Log &$log, &$auth, &$upref, $status){
 		parent::__construct($name, &$smarty, &$query, &$mcoll, &$log);
 }*/
+
+class kwt_month extends kform{
+	public $month;
+	public $year;
+	public $minyear;
+	public $maxyear;
+	function __construct($name, &$smarty, $maxyear, $minyear){
+		$this->minyear = $minyear;
+		$this->maxyear = $maxyear;
+		parent::__construct($name,&$smarty);
+		$this->year =& $this->add_input(new kdb_input("wtyear", &$smarty,  new kvint_min_max($minyear, $maxyear), date("Y")));
+		$this->month =& $this->add_input(new kdb_input("wtmonth", &$smarty, new kvint_min_max(1,12), date("m")));
+	}
+}
+
 
 class kworktime{
 	const working=1;//at work working
@@ -138,6 +153,8 @@ class kworktime{
 	public function display(){
 		//check user premissions
 		if($this->auth_check()){
+			//is user has admin premissions set them
+			$this->smarty->assign("kwtadmin", $this->auth->check_group("kwtadmin"));
 			$this->process_request();
 		}
 	}
@@ -153,28 +170,14 @@ class kworktime{
 	private function process_request(){
 		if($_GET['action']=="rday")
 			$this->day_report();
+		else if($_GET['action']=="rrange")
+			$this->range_report();
+		else if($_GET['action']=="rmonth")
+			$this->month_report();
+		else if($_GET['action']=="ryear")
+			$this->year_report();
 		else
 			$this->set_times();
-	}
-	/**process day report*/
-	private function day_report(){
-		$form =& new kform("selday", $this->smarty);
-		$fi_date =& $form->add_input(new kinput("idate", $this->smarty, new kv_date(), date($this->uprefs->date)));
-		$sub_date =& $form->add_submit(new kwtdr_submit("dsel", $this->smarty));
-		if(isset($_GET['day'])){
-			$gdate = $_GET['day'];
-			if(is_int($_GET['day']))
-				$gdate = date($this->uprefs->date, $_GET['day']);
-			$fi_date->set_value($gdate);
-			$form->submit(&$sub_date);
-		}
-		if($form->submited()){
-			$details =& $this->day_details($this->auth->userindex, strtotime($fi_date->value));
-			$this->smarty->assign("ddate", $fi_date->value);
-			$this->smarty->assign_by_ref("ddetails", $details["details"]);
-			$this->smarty->assign_by_ref("dsumary", $details["sumary"]);
-		}
-		$this->smarty->display("dayreport.tpl");
 	}
 	/**get working status and respond with apropiate action*/
 	private function set_times(){
@@ -232,21 +235,32 @@ class kworktime{
 		$settings->unserialize();
 		//finding last wstart time
 		$startwtime=$info["time"];
+		$laststatustime=strtotime($startwtime);
 		if($info["status"]!=kworktime::working)
 			 $startwtime=$this->get_last_stime();
 		$startwtime=strtotime($startwtime);
 		//get current rime
 		$ctime = time();
 		//see if maxwtime has been excited
-		if((time()-$startwtime)>$settings->data["maxwtime"]){
+		if(($ctime-$startwtime)>$settings->data["maxwtime"]){
 			//calculate ending time
 			$endtime = $startwtime+$settings->data["daywhours"];
 			//little check so that we have nice data for reports
 			if($endtime>$ctime || $endtime < $startwtime)
 				$endtime=$ctime;
+			$newstatus = kworktime::snot_working;
+			if($endtime<=$laststatustime){
+				$endtime=$laststatustime+1;
+				/*if($info['status']==kworktime::lunch)
+					$newstatus=kowrktime::slunch_end;
+				else if($info['status']==kworktime::out)
+					$newstatus=kowrktime::sin;
+				else if($info['status']==kworktime::wbreak)
+					$newstatus=kowrktime::swbreak_end;*/
+			}
 			//folowing if is because possible endless loop
-			if($this->new_status($endtime, kworktime::snot_working)){
-				$this->smarty->assign("endwtime", date($this->uprefs->time." ".$this->uprefs->date, switchzone($endtime, date("Z", $endtime), $this->uprefs->tzone)));
+			if($this->new_status($endtime, $newstatus)){
+				$this->smarty->assign("endwtime", date($this->uprefs->time." ".$this->uprefs->date, $endtime));
 				$this->set_times();
 			}
 			else{
@@ -314,10 +328,10 @@ class kworktime{
 	}
 	/**function which sets new user status*/
 	private function new_status($time, $status, $note=null){
-		$querys = "SELECT kworktime.new_status($1,$2,$3,$4,$5);";
+		$querys = "SELECT kworktime.new_status($1,$2,$3,$4);";
 		$rezult = false;
 		try{
-			$rezult=&$this->sql_query->query_params($querys, array($this->auth->userindex, $status, $note, date("c",$time), $this->uprefs->tzone));
+			$rezult=&$this->sql_query->query_params($querys, array($this->auth->userindex, $status, $note, date("c",$time)));
 		}
 		catch(Exception $e){
 			$this->klog->err($e->getMessage());
@@ -342,7 +356,8 @@ class kworktime{
 			//folowing if is because possible endless loop
 			if($this->new_status($endtime, kworktime::slunch_end)){
 				//$this->new_status($endtime+1, kworktime::snot_working)
-				$this->smarty->assign("endltime", date($this->uprefs->time." ".$this->uprefs->date, switchzone($endtime, date("Z", $endtime), $this->uprefs->tzone)));
+				//$this->smarty->assign("endltime", date($this->uprefs->time." ".$this->uprefs->date, switchzone($endtime, date("Z", $endtime), $this->uprefs->tzone)));
+				$this->smarty->assign("endltime", date($this->uprefs->time." ".$this->uprefs->date, $endtime));
 				$this->set_times();
 			}
 			else{
@@ -359,6 +374,8 @@ class kworktime{
 		$settings =& new settings;
 		$settings->unserialize();
 		$startbtime=strtotime($info["time"]);
+		//get work start time
+		$laststarttime=strtotime($this->get_last_stime());
 		//get current rime
 		$ctime = time();
 		if($ctime-$startbtime>$settings->data["maxbtime"]){
@@ -366,10 +383,16 @@ class kworktime{
 			$endtime = $startbtime+$settings->data["maxbtime"];
 			if($endtime>$ctime || $endtime < $startbtime)
 				$endtime=$ctime;
+			//if day work time is passed
+			if($endtime>$laststarttime+$settings->data["maxwtime"])
+				$endtime=$laststarttime+$settings->data["daywhours"];
+			//endtime can not be less than laststatustime
+			if($endtime<=$startbtime)
+				$endtime=$startbtime+1;
 			//stop lunch and work time
 			//folowing if is because possible endless loop
 			if($this->new_status($endtime, kworktime::swbreak_end)){
-				$this->smarty->assign("endltime", date($this->uprefs->time." ".$this->uprefs->date, switchzone($endtime, date("Z", $endtime), $this->uprefs->tzone)));
+				$this->smarty->assign("endltime", date($this->uprefs->time." ".$this->uprefs->date, $endtime));
 				$this->set_times();
 			}
 			else{
@@ -385,7 +408,13 @@ class kworktime{
 		//loading company settings
 		$settings =& new settings;
 		$settings->unserialize();
-		$startotime=strtotime($info["time"]);
+		//finding last wstart time
+		$startotime=$info["time"];
+		//save laststatus time as work start time could change
+		$laststatustime=strtotime($startotime);
+		//get work start time
+		$startotime=$this->get_last_stime();
+		$startotime=strtotime($startotime);
 		//get current rime
 		$ctime = time();
 		//see if maxwtime has been excited
@@ -394,9 +423,12 @@ class kworktime{
 			$endtime = $startotime+$settings->data["daywhours"];
 			if($endtime>$ctime || $endtime < $startotime)
 				$endtime=$ctime;
+			//endtime can not be less than laststatustime
+			if($endtime<=$laststatustime)
+				$endtime=$laststatustime+1;
 			//folowing if is because possible endless loop
 			if($this->new_status($endtime, kworktime::sin)){
-				$this->smarty->assign("endotime", date($this->uprefs->time." ".$this->uprefs->date, switchzone($endtime, date("Z", $endtime), $this->uprefs->tzone)));
+				$this->smarty->assign("endotime", date($this->uprefs->time." ".$this->uprefs->date, $endtime));
 				$this->set_times();
 			}
 			else{
@@ -419,9 +451,35 @@ class kworktime{
 			}
 		}
 	}
-	private function &day_details($user, $day){
+	/**process day report*/
+	private function day_report(){
+		$form =& new kform("selday", $this->smarty);
+		$fi_date =& $form->add_input(new kinput("idate", $this->smarty, new kv_date(), date($this->uprefs->date)));
+		$sub_date =& $form->add_submit(new kwtdr_submit("dsel", $this->smarty));
+		if(isset($_GET['day'])){
+			$gdate = $_GET['day'];
+			if(is_numeric($_GET['day']))
+				$gdate = date($this->uprefs->date, (int)$_GET['day']);
+			$fi_date->set_value($gdate);
+			$form->submit(&$sub_date);
+		}
+		if($form->submited()){
+			$details =& $this->day_details($this->auth->userindex, strtotime($fi_date->value));
+			$this->smarty->assign("ddate", $fi_date->value);
+			$this->smarty->assign_by_ref("ddetails", $details["details"]);
+			$this->smarty->assign_by_ref("dsumary", $details["sumary"]);
+		}
+		$this->smarty->display("dayreport.tpl");
+	}
+	/**get day details
+	* @param int $user is userindex parametar
+	* @param int $day day in unix timestamp (seconds)*/
+	private function day_details($user, $day){
+		//loading company settings
+		$settings =& new settings;
+		$settings->unserialize();
 		//get day info from db
-		$query="SELECT stype, note, stime, uzone FROM kworktime.times WHERE user_index=$1 AND stime>$2 AND stime<$3 ORDER BY stime;";
+		$query="SELECT stype, note, stime FROM kworktime.times WHERE user_index=$1 AND stime>$2 AND stime<$3 UNION SELECT stype, note, stime FROM kworktime.ctime WHERE user_index=$1 AND stime>$2 AND stime<$3 ORDER BY stime";
 		$rezult = false;
 		try{
 			$rezult=&$this->sql_query->query_params($query, array($user, date("c",$day), date("c", $day+86400)));
@@ -435,13 +493,14 @@ class kworktime{
 		//ltime - total lunch time
 		//btime - total break time
 		//otime - total out time
-		$sumary=array("wtime"=>0,"ltime"=>0,"btime"=>0,"otime"=>0);
+		$sumary=array("wtime"=>0,"ltime"=>0,"btime"=>0,"otime"=>0, "working"=>false);
 		$cur = -1;
 		$last_time=$day;
 		while(($row=$rezult->next())){
-			$row['stime']=strtotime($row['stime']);
-			$row['total']=$row['stime']-$last_time;
-			$last_time=$row['stime'];
+			$temp_time=strtotime($row['stime']);
+			$row['stime']=date($this->uprefs->time." ".$this->uprefs->date, $temp_time);
+			$row['total']=$temp_time-$last_time;
+			$last_time=$temp_time;
 			$details[]=$row;
 			switch($row['stype']){
 				case kworktime::lunch_end:
@@ -474,23 +533,154 @@ class kworktime{
 			case kworktime::lunch_end:
 			case kworktime::wbreak_end:
 			case kworktime::in:
-				$sumary['wtime']+=($day+86400-$details[$cur]['stime']);
+				$sumary['wtime']+=($day+86400-$last_time);
+				if(time()-$last_time<$settings->data['maxwtime'])
+				$sumary['working']=true;
 				break;
 			case kworktime::lunch:
-				$sumary['wtime']+=($day+86400-$details[$cur]['stime']);
-				$sumary['ltime']+=($day+86400-$details[$cur]['stime']);
+				$sumary['wtime']+=($day+86400-$last_time);
+				$sumary['ltime']+=($day+86400-$last_time);
+				if(time()-$last_time<$settings->data['maxwtime'])
+				$sumary['working']=true;
 				break;
 			case kworktime::out:
-				$sumary['wtime']+=($day+86400-$details[$cur]['stime']);
-				$sumary['otime']+=($day+86400-$details[$cur]['stime']);
+				$sumary['wtime']+=($day+86400-$last_time);
+				$sumary['otime']+=($day+86400-$last_time);
+				if(time()-$last_time<$settings->data['maxwtime'])
+				$sumary['working']=true;
 				break;
 			case kworktime::wbreak:
-				$sumary['wtime']+=($day+86400-$details[$cur]['stime']);
-				$sumary['btime']+=($day+86400-$details[$cur]['stime']);
+				$sumary['wtime']+=($day+86400-$last_time);
+				$sumary['btime']+=($day+86400-$last_time);
+				if(time()-$last_time<$settings->data['maxwtime'])
+				$sumary['working']=true;
 				break;
 		}
-		return array("deatils"=>$details, "sumary"=>$sumary);
+		$sumary['wtime']=gmdate($this->uprefs->time, $sumary['wtime']);
+		$sumary['ltime']=gmdate($this->uprefs->time, $sumary['ltime']);
+		$sumary['btime']=gmdate($this->uprefs->time, $sumary['btime']);
+		$sumary['otime']=gmdate($this->uprefs->time, $sumary['otime']);
+		return array("details"=>$details, "sumary"=>$sumary);
 	}
+	private function range_report(){
+		print "Not implemented";
+	}
+	private function month_report(){
+		$month =& new kwt_month("month_sel", &$this->smarty, 2005, date("Y"));
+		$month->add_submit(new k_submit("month_sel_sub", &$this->smarty));
+		$this->smarty->assign("yeard", date("Y"));
+		$this->smarty->assign("monthd", date("m"));
+		if($month->submited()){
+			$from = strtotime($month->year->get_value()."-".$month->month->get_value()."-01");
+			$to =  strtotime($month->year->get_value()."-".$month->month->get_value()."-".cal_days_in_month(CAL_GREGORIAN,$month->month->get_value(),$month->year->get_value()));
+			$dates =& $this->generate_range_report($this->auth->userindex, $from, $to);
+			$this->smarty->assign("drange", date($this->uprefs->date,$from)." - ".date($this->uprefs->date,$to));
+			$this->smarty->assign("ruser", $this->auth->username);
+			foreach($dates[0] as $key => &$value){
+				$temp = sec2hms($value["totalw"]);
+				$value["totalw"]= $temp["hours"].":".$temp["min"].":".$temp["sec"];
+				$temp = sec2hms($value["efectivw"]);
+				$value["efectivw"]=$temp["hours"].":".$temp["min"].":".$temp["sec"];
+			}
+			$temp = sec2hms($dates[1]['work']);
+			$dates[1]['work'] = $temp["hours"].":".$temp["min"].":".$temp["sec"];
+			$temp = sec2hms($dates[1]['effectiv']);
+			$dates[1]['effectiv'] = $temp["hours"].":".$temp["min"].":".$temp["sec"];
+			$this->smarty->assign_by_ref("bydate",&$dates[0]);
+			$this->smarty->assign_by_ref("total",&$dates[1]);
+		}
+		$this->smarty->display("month_report.tpl");
+	}
+	private function year_report(){
+		print "Not implemented";
+	}
+	private function &generate_range_report($user, $start, $stop){
+		$dates = array();
+		$startf = $start;
+		while($startf <= $stop){
+			$dates[date($this->uprefs->date,$startf)]=array("totalw" => 0, "efectivw" => 0, "link" => $startf);
+			$startf = strtotime('+1 days', $startf);
+		}
+		//get data info from db
+		$query="SELECT stype, stime FROM kworktime.times WHERE user_index=$1 AND stime>$2 AND stime<$3 UNION SELECT stype, stime FROM kworktime.ctime WHERE user_index=$1 AND stime>$2 AND stime<$3 ORDER BY stime";
+		$rezult = false;
+		try{
+			$rezult = &$this->sql_query->query_params($query, array($user, date("c",$start), date("c", strtotime('+1 days', $stop))));
+		}
+		catch(Exception $e){
+			$this->klog->err($e->getMessage());
+		}
+		$last_time = $start;
+		$last_date = 0;
+		$gtotal = array("work" => 0, "effectiv" => 0);
+		while(($row = $rezult->next())){
+			$stime=strtotime($row['stime']);
+			$key = date($this->uprefs->date, $stime);
+			$day_zero_time = strtotime($key);
+			if($last_date != $key){
+				$plus_time = $stime - $day_zero_time;
+				$lplus_time = $day_zero_time-$last_time;
+				switch($row['stype']){
+					case kworktime::lunch_end:
+					case kworktime::wbreak_end:
+					case kworktime::swbreak_end:
+					case kworktime::slunch_end:
+					case kworktime::sin:
+						$dates[$key]["totalw"] += $plus_time;
+						$gtotal["work"]+=$plus_time;
+						if($last_date != 0){
+							$dates[$last_date]["totalw"] +=$lplus_time;
+							$gtotal["work"]+=$lplus_time;
+						}
+						break;
+					case kworktime::snot_working:
+					case kworktime::not_working:
+					case kworktime::lunch:
+					case kworktime::out:
+					case kworktime::in:
+					case kworktime::wbreak:
+						$dates[$key]["totalw"] += $plus_time;
+						$dates[$key]["efectivw"] += $plus_time;
+						$gtotal["effectiv"] += $plus_time;
+						$gtotal["work"]+=$plus_time;
+						if($last_date != 0){
+							$dates[$last_date]["totalw"]+=$lplus_time;
+							$gtotal["work"]+=$lplus_time;
+							$dates[$last_date]["efectivw"]+=$lplus_time;
+							$gtotal["effectiv"] += $lplus_time;
+						}
+						break;
+				}
+			}
+			else{
+				$plus_time = $stime - $last_time;
+				switch($row['stype']){
+					case kworktime::lunch_end:
+					case kworktime::wbreak_end:
+					case kworktime::swbreak_end:
+					case kworktime::slunch_end:
+					case kworktime::sin:
+						$dates[$key]["totalw"] += $plus_time;
+						$gtotal["work"]+=$plus_time;
+						break;
+					case kworktime::snot_working:
+					case kworktime::not_working:
+					case kworktime::lunch:
+					case kworktime::out:
+					case kworktime::wbreak:
+					case kworktime::in:
+						$dates[$key]["totalw"] += $plus_time;
+						$gtotal["work"]+=$plus_time;
+						$dates[$key]["efectivw"] += $plus_time;
+						$gtotal["effectiv"] += $plus_time;
+						break;
+				}
+			}
+			$last_date = $key;
+			$last_time=$stime;
+		}
+		return array($dates, $gtotal);
+	}	
 }
 
 $main =&new kworktime($auth, $prefs);

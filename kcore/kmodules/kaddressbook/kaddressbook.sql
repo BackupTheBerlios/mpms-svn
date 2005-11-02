@@ -13,8 +13,6 @@ SET client_min_messages = warning;
 CREATE SCHEMA kaddressbook;
 
 
-ALTER SCHEMA kaddressbook OWNER TO kodmasin;
-
 SET search_path = kaddressbook, pg_catalog;
 
 --
@@ -32,8 +30,6 @@ $_$
     LANGUAGE plpgsql;
 
 
-ALTER FUNCTION kaddressbook.add_company(character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, bigint, text, boolean) OWNER TO kodmasin;
-
 --
 -- Name: add_person(character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, text, character varying, bigint, boolean); Type: FUNCTION; Schema: kaddressbook; Owner: kodmasin
 --
@@ -50,8 +46,6 @@ END;
 $_$
     LANGUAGE plpgsql;
 
-
-ALTER FUNCTION kaddressbook.add_person(character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, character varying, text, character varying, bigint, boolean) OWNER TO kodmasin;
 
 --
 -- Name: user_company(bigint, bigint, bigint); Type: FUNCTION; Schema: kaddressbook; Owner: kodmasin
@@ -73,8 +67,6 @@ END;
 $_$
     LANGUAGE plpgsql;
 
-
-ALTER FUNCTION kaddressbook.user_company(bigint, bigint, bigint) OWNER TO kodmasin;
 
 SET default_tablespace = '';
 
@@ -102,8 +94,6 @@ CREATE TABLE company (
 );
 
 
-ALTER TABLE kaddressbook.company OWNER TO kodmasin;
-
 --
 -- Name: company_sek; Type: SEQUENCE; Schema: kaddressbook; Owner: kodmasin
 --
@@ -114,8 +104,6 @@ CREATE SEQUENCE company_sek
     NO MINVALUE
     CACHE 1;
 
-
-ALTER TABLE kaddressbook.company_sek OWNER TO kodmasin;
 
 --
 -- Name: person_sek; Type: SEQUENCE; Schema: kaddressbook; Owner: kodmasin
@@ -128,14 +116,12 @@ CREATE SEQUENCE person_sek
     CACHE 1;
 
 
-ALTER TABLE kaddressbook.person_sek OWNER TO kodmasin;
-
 --
 -- Name: persons; Type: TABLE; Schema: kaddressbook; Owner: kodmasin; Tablespace: 
 --
 
 CREATE TABLE persons (
-    "index" bigint DEFAULT nextval('kaddressbook.person_sek'::text) NOT NULL,
+    "index" bigint NOT NULL,
     "first" character varying(30),
     middle character varying(30),
     "last" character varying(30),
@@ -160,8 +146,6 @@ CREATE TABLE persons (
 );
 
 
-ALTER TABLE kaddressbook.persons OWNER TO kodmasin;
-
 --
 -- Name: adp_uk; Type: CONSTRAINT; Schema: kaddressbook; Owner: kodmasin; Tablespace: 
 --
@@ -169,8 +153,6 @@ ALTER TABLE kaddressbook.persons OWNER TO kodmasin;
 ALTER TABLE ONLY persons
     ADD CONSTRAINT adp_uk UNIQUE (nickname);
 
-
-ALTER INDEX kaddressbook.adp_uk OWNER TO kodmasin;
 
 --
 -- Name: ka_uk_name; Type: CONSTRAINT; Schema: kaddressbook; Owner: kodmasin; Tablespace: 
@@ -180,8 +162,6 @@ ALTER TABLE ONLY company
     ADD CONSTRAINT ka_uk_name UNIQUE (name, address, city);
 
 
-ALTER INDEX kaddressbook.ka_uk_name OWNER TO kodmasin;
-
 --
 -- Name: pk_kaddressbookcompany; Type: CONSTRAINT; Schema: kaddressbook; Owner: kodmasin; Tablespace: 
 --
@@ -189,8 +169,6 @@ ALTER INDEX kaddressbook.ka_uk_name OWNER TO kodmasin;
 ALTER TABLE ONLY company
     ADD CONSTRAINT pk_kaddressbookcompany PRIMARY KEY ("index");
 
-
-ALTER INDEX kaddressbook.pk_kaddressbookcompany OWNER TO kodmasin;
 
 --
 -- Name: pk_kaddressbookpersons; Type: CONSTRAINT; Schema: kaddressbook; Owner: kodmasin; Tablespace: 
@@ -200,8 +178,6 @@ ALTER TABLE ONLY persons
     ADD CONSTRAINT pk_kaddressbookpersons PRIMARY KEY ("index");
 
 
-ALTER INDEX kaddressbook.pk_kaddressbookpersons OWNER TO kodmasin;
-
 --
 -- Name: uk_p_ema; Type: CONSTRAINT; Schema: kaddressbook; Owner: kodmasin; Tablespace: 
 --
@@ -210,8 +186,6 @@ ALTER TABLE ONLY persons
     ADD CONSTRAINT uk_p_ema UNIQUE (email);
 
 
-ALTER INDEX kaddressbook.uk_p_ema OWNER TO kodmasin;
-
 --
 -- Name: uk_p_mob; Type: CONSTRAINT; Schema: kaddressbook; Owner: kodmasin; Tablespace: 
 --
@@ -219,8 +193,6 @@ ALTER INDEX kaddressbook.uk_p_ema OWNER TO kodmasin;
 ALTER TABLE ONLY persons
     ADD CONSTRAINT uk_p_mob UNIQUE (mobile);
 
-
-ALTER INDEX kaddressbook.uk_p_mob OWNER TO kodmasin;
 
 --
 -- Name: adre_fk_comp_per; Type: FK CONSTRAINT; Schema: kaddressbook; Owner: kodmasin
