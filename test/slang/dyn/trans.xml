@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<!DOCTYPE iloc SYSTEM "http://norimob/iloc/xml/iloc.dtd">
+<iloc version="0.1"><langs><lang name="en"/><lang name="hr"/></langs><constants><constant name="dyn"><default>There is %d players.</default><translation lang="en">There is %d players.</translation><translation lang="hr">Igra %d igraća</translation></constant>
+</constants>
+</iloc>
