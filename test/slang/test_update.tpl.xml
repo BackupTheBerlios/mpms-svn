@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<!DOCTYPE iloc SYSTEM "http://localhost/iloc/xml/iloc.dtd">
-<iloc version="0.1"><langs/><constants><constant name="title"><default>Test klang</default></constant><constant name="page_title"><default>Test klangSmarty</default></constant><constant name="change_lang"><default>Change Language to</default></constant><constant name="en"><default>Engleski</default></constant><constant name="hr"><default>Hrvatski</default></constant><constant name="sel_lang"><default>selectlanguage</default></constant><constant name="desc"><default>This is test file for
-klanfSmarty extension. This is small extension
-which add multilanguage support to Smarty.</default></constant><constant name="desc1"><default>Useage is same as Smarty. Only
-few minor diferences are in
-constructor regarding usag.</default></constant><constant name="desc3"><default>Useage is same as Smarty. Only
-few minor diferences are in
-constructor regarding usag.treci jjjj</default></constant></constants></iloc>

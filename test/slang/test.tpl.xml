@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<!DOCTYPE iloc SYSTEM "http://norimob/iloc/xml/iloc.dtd">
-<iloc version="0.1"><langs><lang name="en"/><lang name="hr"/></langs><constants><constant name="page_title"><default>Test klangSmarty</default><translation lang="en">Test klangSmarty Engleski</translation><translation lang="hr">Test langSmarty Hrvatski</translation></constant><constant name="change_lang"><default>Change Language to</default><translation lang="en">Cahnge Language</translation><translation lang="hr">Promjeni jezik</translation></constant>
-<constant name="desc"><default>This is test file for
-klanfSmarty extension. This is small extension
-which add multilanguage support to Smarty.</default><translation lang="en">This is test file for
-klanfSmarty extension. This is small extension
-which add multilanguage support to Smarty.</translation><translation lang="hr">Ovo je testni file za slangSmarty ekstenziju. Ona daje vrlo efikasni support za visejezicne siteove.</translation></constant>
-</constants></iloc>
